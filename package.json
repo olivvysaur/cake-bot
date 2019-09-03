@@ -2,8 +2,10 @@
   "name": "cake-bot",
   "version": "1.0.0",
   "description": "Discord bot for distributing cake.",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
+    "start": "node -r ts-node/register index.ts",
+    "dev": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,5 +24,16 @@
   },
   "devDependencies": {
     "nodemon": "^1.19.2"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      ".git",
+      "node_modules"
+    ],
+    "watch": [
+      "src"
+    ],
+    "exec": "npm start",
+    "ext": "ts"
   }
 }
