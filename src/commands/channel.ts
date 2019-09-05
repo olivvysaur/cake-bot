@@ -2,6 +2,7 @@ import * as Discord from 'discord.js';
 
 import { Command, CommandFn } from '../interfaces';
 import { client } from '../index';
+import { setServerChannel } from '../database';
 
 const setChannel: CommandFn = (params, msg) => {
   if (params.length < 1) {
@@ -18,7 +19,8 @@ const setChannel: CommandFn = (params, msg) => {
     return msg.channel.send("I couldn't find that channel.");
   }
 
-  // Do some DB stuff...
+  const server = msg.guild.id;
+  setServerChannel(server, channelId);
 
   msg.channel.send(`Switched channels to #${channel.name}.`);
   return channel.send(

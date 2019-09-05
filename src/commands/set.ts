@@ -1,6 +1,8 @@
+import moment = require('moment');
+
 import { Command, CommandFn } from '../interfaces';
 import { parseDate, formatDate } from '../dates';
-import moment = require('moment');
+import { setBirthday as setBirthdayInDb } from '../database';
 
 const VALID_FORMATS = ['18 October', '18/10'];
 
@@ -32,7 +34,9 @@ const setBirthday: CommandFn = (params, msg) => {
     );
   }
 
-  // Do some DB stuff...
+  const server = msg.guild.id;
+  const user = msg.member.id;
+  setBirthdayInDb(server, user, moment);
 
   return msg.channel.send(
     `OK, I'll remember that your birthday is ${formatDate(moment)}.`
