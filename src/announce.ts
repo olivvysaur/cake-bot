@@ -31,7 +31,6 @@ export const announceBirthdays = async () => {
       return;
     }
 
-    console.log(birthdays);
     const names = birthdays
       .map((userId: string) => getUsername(serverId, userId))
       .filter(Boolean);

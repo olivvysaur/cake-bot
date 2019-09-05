@@ -11,7 +11,6 @@ const MONTH_NAMES = moment.months();
 const listBirthdays: CommandFn = async (params, msg) => {
   const serverId = msg.guild.id;
   const birthdays = await getBirthdays(serverId);
-  console.log(birthdays);
 
   const embed = new RichEmbed();
 
