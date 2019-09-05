@@ -1,8 +1,6 @@
 import Discord from 'discord.js';
 import { config as loadEnv } from 'dotenv';
 
-import { parseDate } from './parseDate';
-
 import { COMMANDS } from './commands';
 
 loadEnv();
@@ -28,10 +26,6 @@ client.on('message', msg => {
   }
 
   command.fn(params, msg);
-
-  // if (msg.content === 'ping') {
-  //   msg.reply('pong');
-  // }
 
   // if (msg.content.startsWith('!test')) {
   //   const content = msg.content.replace('!test ', '');

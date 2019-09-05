@@ -12,7 +12,7 @@ const displayHelp: CommandFn = (params, msg) => {
   });
 
   msg.channel.send(
-    'These are all the commands Cake Bot uses. Remember to @mention Cake Bot at the start of your command.',
+    'These are all the commands I understand. Remember to @mention me at the start of your command.',
     embed
   );
 };
