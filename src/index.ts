@@ -4,6 +4,7 @@ import schedule from 'node-schedule';
 
 import { COMMANDS } from './commands';
 import { announceBirthdays } from './announce';
+import { addServer, removeServer } from './database';
 
 loadEnv();
 
@@ -18,6 +19,16 @@ client.on('ready', () => {
 
   schedule.scheduleJob(rule, announceBirthdays);
   console.log('Scheduled announcement for 5:00 AM.');
+});
+
+client.on('guildCreate', async server => {
+  addServer(server.id);
+  console.log(`Joined server ${server.id} (${server.name})`);
+});
+
+client.on('guildDelete', async server => {
+  removeServer(server.id);
+  console.log(`Left server ${server.id} (${server.name})`);
 });
 
 client.on('message', async msg => {
