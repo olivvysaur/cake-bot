@@ -31,14 +31,15 @@ admin.initializeApp({
 const db = admin.database();
 const ref = db.ref('/');
 
-export const getNextAnnouncementTime = async () => {
-  const data = await ref.child('announcementTime').once('value');
-  return moment(data.val());
+export const getNextAnnouncementDate = async () => {
+  const data = await ref.child('announcementDate').once('value');
+  return data.val();
 };
 
-export const setNextAnnouncementTime = (date: moment.Moment) => {
-  const isoDate = date.toISOString();
-  ref.child('announcementTime').set(isoDate);
+export const setNextAnnouncementDate = (date: moment.Moment) => {
+  const month = date.month();
+  const day = date.date();
+  ref.child('announcementDate').set({ month, day });
 };
 
 export const addServer = (server: string) => {
@@ -80,7 +81,11 @@ export const setBirthday = (
     .set({ month, day });
 };
 
-export const getBirthdays = async (server: string, date?: moment.Moment) => {
+export const getBirthdays = async (
+  server: string,
+  month?: number,
+  day?: number
+) => {
   const serverUsersData = await ref
     .child('birthdays')
     .child(server)
@@ -104,10 +109,12 @@ export const getBirthdays = async (server: string, date?: moment.Moment) => {
     };
   }, {});
 
-  if (date) {
-    const month = date.month();
-    const day = date.date();
-    return birthdays[month][day];
+  if (month !== undefined && day !== undefined) {
+    if (birthdays[month] && birthdays[month][day]) {
+      return birthdays[month][day];
+    } else {
+      return [];
+    }
   }
 
   return birthdays;

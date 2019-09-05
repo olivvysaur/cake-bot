@@ -26,8 +26,8 @@ const listBirthdays: CommandFn = async (params, msg) => {
 
     const list = Object.keys(monthBirthdays).reduce((result, day) => {
       const dayBirthdays = monthBirthdays[day]
-        .filter(Boolean)
         .map((userId: string) => getUsername(serverId, userId))
+        .filter(Boolean)
         .join(', ');
 
       return `${result}\n${day}: ${dayBirthdays}`;
