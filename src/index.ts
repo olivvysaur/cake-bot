@@ -48,5 +48,4 @@ client.on('message', async msg => {
   command.fn(params, msg);
 });
 
-console.log(process.env.DISCORD_BOT_TOKEN);
 client.login(process.env.DISCORD_BOT_TOKEN);
