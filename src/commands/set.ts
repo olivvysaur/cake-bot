@@ -32,6 +32,8 @@ const setBirthday: CommandFn = (params, msg) => {
     );
   }
 
+  // Do some DB stuff...
+
   return msg.channel.send(
     `OK, I'll remember that your birthday is ${formatDate(moment)}.`
   );
