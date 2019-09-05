@@ -48,4 +48,5 @@ client.on('message', async msg => {
   command.fn(params, msg);
 });
 
+console.log('About to log in to discord');
 client.login(process.env.DISCORD_BOT_TOKEN);
