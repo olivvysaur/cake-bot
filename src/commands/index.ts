@@ -4,14 +4,14 @@ import { help } from './help';
 import { ping } from './ping';
 import { list } from './list';
 import { set } from './set';
-import { mentions } from './mentions';
 import { channel } from './channel';
+import { mentions } from './mentions';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
-  ping,
+  // ping,
   list,
   set,
-  channel,
-  mentions
+  channel
+  // mentions
 };
