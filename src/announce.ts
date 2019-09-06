@@ -37,8 +37,13 @@ export const announceBirthdays = async () => {
 
     const startOfList = names.slice(0, -1).join(', ');
     const endOfList = names.slice(-1).join('');
+
     const list =
-      names.length > 1 ? `${startOfList} and ${endOfList}` : names[0];
+      names.length > 2
+        ? `${startOfList}, and ${endOfList}`
+        : names.length === 2
+        ? `${startOfList} and ${endOfList}`
+        : names[0];
 
     const message = `🎂🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈🎂
 
