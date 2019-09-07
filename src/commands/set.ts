@@ -50,7 +50,7 @@ const setBirthday: CommandFn = async (params, msg) => {
   }
 
   await updateBirthday(server, user, parsedDate);
-  msg.delete();
+  return msg.channel.send('✅ Got it!');
 };
 
 export const set: Command = {
