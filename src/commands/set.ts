@@ -7,20 +7,34 @@ import { updateList } from '../updateList';
 
 const VALID_FORMATS = ['18 October', '18/10'];
 
+const updateBirthday = async (
+  serverId: string,
+  userId: string,
+  birthday: moment.Moment
+) => {
+  await setBirthdayInDb(serverId, userId, birthday);
+  await updateList(serverId);
+};
+
 const setBirthday: CommandFn = async (params, msg) => {
   if (params.length < 1) {
     return;
   }
 
+  const server = msg.guild.id;
+  const user = msg.member.id;
+
   const date = params.join(' ');
   const parsedDate = parseDate(date);
 
   if (parsedDate instanceof Array) {
-    const option1 = formatDate(parsedDate[0]);
-    const option2 = formatDate(parsedDate[1]);
+    const ukFormat = formatDate(parsedDate[0]);
+    const usFormat = formatDate(parsedDate[1]);
+
+    await updateBirthday(server, user, parsedDate[1]);
 
     return msg.channel.send(
-      `${date} is ambiguous – try "set ${option1}" or "set ${option2}".`
+      `Heads up, ${date} is ambiguous, so I assumed you meant ${usFormat}. If you meant ${ukFormat} instead, do "set ${ukFormat}".`
     );
   }
 
@@ -35,12 +49,7 @@ const setBirthday: CommandFn = async (params, msg) => {
     );
   }
 
-  const server = msg.guild.id;
-  const user = msg.member.id;
-
-  await setBirthdayInDb(server, user, moment);
-  await updateList(server);
-
+  await updateBirthday(server, user, parsedDate);
   msg.delete();
 };
 
