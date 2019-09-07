@@ -58,7 +58,7 @@ export const updateList = async (serverId: string) => {
 
   const embed = await listBirthdays(serverId);
 
-  const message = channel.messages.get(listMessageId);
+  const message = await channel.fetchMessage(listMessageId);
   if (message) {
     message.edit('', embed);
   } else {
