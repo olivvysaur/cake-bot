@@ -4,6 +4,7 @@ import { Command, CommandFn } from '../interfaces';
 import { parseDate, formatDate } from '../dates';
 import { setBirthday as setBirthdayInDb } from '../database';
 import { updateList } from '../updateList';
+import { Message } from 'discord.js';
 
 const VALID_FORMATS = ['18 October', '18/10'];
 
@@ -33,9 +34,14 @@ const setBirthday: CommandFn = async (params, msg) => {
 
     await updateBirthday(server, user, parsedDate[1]);
 
-    return msg.channel.send(
+    const sentMessage = await msg.channel.send(
       `✅ Got it! Heads up, ${date} is ambiguous, so I assumed you meant ${usFormat}. If you meant ${ukFormat} instead, do "set ${ukFormat}".`
     );
+
+    setTimeout(() => {
+      msg.delete();
+      (sentMessage as Message).delete();
+    }, 10000);
   }
 
   const moment = parsedDate as moment.Moment;
@@ -49,8 +55,13 @@ const setBirthday: CommandFn = async (params, msg) => {
     );
   }
 
-  await updateBirthday(server, user, parsedDate);
-  return msg.channel.send('✅ Got it!');
+  await updateBirthday(server, user, moment);
+  const sentMessage = await msg.channel.send('✅ Got it!');
+
+  setTimeout(() => {
+    msg.delete();
+    (sentMessage as Message).delete();
+  }, 5000);
 };
 
 export const set: Command = {
