@@ -34,7 +34,7 @@ const setBirthday: CommandFn = async (params, msg) => {
     await updateBirthday(server, user, parsedDate[1]);
 
     return msg.channel.send(
-      `Heads up, ${date} is ambiguous, so I assumed you meant ${usFormat}. If you meant ${ukFormat} instead, do "set ${ukFormat}".`
+      `✅ Got it! Heads up, ${date} is ambiguous, so I assumed you meant ${usFormat}. If you meant ${ukFormat} instead, do "set ${ukFormat}".`
     );
   }
 
