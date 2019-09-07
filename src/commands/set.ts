@@ -37,7 +37,6 @@ const setBirthday: CommandFn = async (params, msg) => {
     const sentMessage = await msg.channel.send(
       `✅ Got it! Heads up, ${date} is ambiguous, so I assumed you meant ${usFormat}. If you meant ${ukFormat} instead, do "set ${ukFormat}".`
     );
-
     setTimeout(() => {
       msg.delete();
       (sentMessage as Message).delete();
@@ -50,14 +49,18 @@ const setBirthday: CommandFn = async (params, msg) => {
       ' or '
     );
 
-    return msg.channel.send(
+    const sentMessage = await msg.channel.send(
       `I don't understand that date. Try something like ${examples}.`
     );
+    setTimeout(() => {
+      msg.delete();
+      (sentMessage as Message).delete();
+    }, 10000);
   }
 
   await updateBirthday(server, user, moment);
-  const sentMessage = await msg.channel.send('✅ Got it!');
 
+  const sentMessage = await msg.channel.send('✅ Got it!');
   setTimeout(() => {
     msg.delete();
     (sentMessage as Message).delete();
