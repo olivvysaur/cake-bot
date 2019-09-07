@@ -3,6 +3,7 @@ import * as Discord from 'discord.js';
 import { Command, CommandFn } from '../interfaces';
 import { client } from '../index';
 import { setServerChannel } from '../database';
+import { updateList } from '../updateList';
 
 const setChannel: CommandFn = (params, msg) => {
   if (params.length < 1) {
@@ -22,15 +23,13 @@ const setChannel: CommandFn = (params, msg) => {
   const server = msg.guild.id;
   setServerChannel(server, channelId);
 
-  msg.channel.send(`Switched channels to #${channel.name}.`);
-  return channel.send(
-    "I'll be sending birthday announcements in this channel from now on."
-  );
+  updateList(server);
+  msg.delete();
 };
 
 export const channel: Command = {
   params: ['#name'],
   description:
-    'Changes which channel birthday messages are posted in, e.g. "channel #birthdays".',
+    'Creates and pins a birthday list in the specified channel, e.g. "channel #birthdays".',
   fn: setChannel
 };

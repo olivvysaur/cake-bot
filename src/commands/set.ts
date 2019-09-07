@@ -3,10 +3,11 @@ import moment = require('moment');
 import { Command, CommandFn } from '../interfaces';
 import { parseDate, formatDate } from '../dates';
 import { setBirthday as setBirthdayInDb } from '../database';
+import { updateList } from '../updateList';
 
 const VALID_FORMATS = ['18 October', '18/10'];
 
-const setBirthday: CommandFn = (params, msg) => {
+const setBirthday: CommandFn = async (params, msg) => {
   if (params.length < 1) {
     return;
   }
@@ -36,11 +37,11 @@ const setBirthday: CommandFn = (params, msg) => {
 
   const server = msg.guild.id;
   const user = msg.member.id;
-  setBirthdayInDb(server, user, moment);
 
-  return msg.channel.send(
-    `OK, I'll remember that your birthday is ${formatDate(moment)}.`
-  );
+  await setBirthdayInDb(server, user, moment);
+  await updateList(server);
+
+  msg.delete();
 };
 
 export const set: Command = {

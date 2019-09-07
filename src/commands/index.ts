@@ -10,7 +10,7 @@ import { mentions } from './mentions';
 export const COMMANDS: { [code: string]: Command } = {
   help,
   // ping,
-  list,
+  // list,
   set,
   channel
   // mentions

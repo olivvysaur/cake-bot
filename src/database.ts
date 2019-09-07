@@ -45,6 +45,7 @@ export const setNextAnnouncementDate = (date: moment.Moment) => {
 export const addServer = (server: string) => {
   const defaultData = {
     channel: null,
+    listMessage: null,
     mentions: false
   };
 
@@ -59,6 +60,11 @@ export const removeServer = (server: string) => {
     .child('servers')
     .child(server)
     .remove();
+
+  ref
+    .child('birthdays')
+    .child(server)
+    .remove();
 };
 
 export const getServers = async () => {
@@ -66,7 +72,7 @@ export const getServers = async () => {
   return servers.val();
 };
 
-export const setBirthday = (
+export const setBirthday = async (
   server: string,
   user: string,
   date: moment.Moment
@@ -74,7 +80,7 @@ export const setBirthday = (
   const month = date.month();
   const day = date.date();
 
-  ref
+  await ref
     .child('birthdays')
     .child(server)
     .child(user)
@@ -135,6 +141,23 @@ export const getServerChannel = async (server: string) => {
     .child('channel')
     .once('value');
   return channel.val();
+};
+
+export const setServerListMessage = (server: string, msgId: string) => {
+  ref
+    .child('servers')
+    .child(server)
+    .child('listMessage')
+    .set(msgId);
+};
+
+export const getServerListMessage = async (server: string) => {
+  const msgId = await ref
+    .child('servers')
+    .child(server)
+    .child('listMessage')
+    .once('value');
+  return msgId.val();
 };
 
 export const setServerMentions = (server: string, mentions: boolean) => {
