@@ -6,7 +6,8 @@ import {
   getBirthdays,
   getServerListMessage,
   getServerChannel,
-  setServerListMessage
+  setServerListMessage,
+  removeBirthday
 } from './database';
 import { getUsername } from './users';
 
@@ -33,13 +34,36 @@ const listBirthdays = async (serverId: string) => {
         .filter(Boolean)
         .join(', ');
 
+      if (dayBirthdays.length === 0) {
+        return result;
+      }
+
       return `${result}\n${day}: ${dayBirthdays}`;
     }, '');
 
-    embed.addField(monthName, `${list}\n\u200B`, false);
+    const monthText = list.length ? `${list}\n\u200B` : `\u200B\n\u200B`;
+
+    embed.addField(monthName, monthText, false);
   });
 
   return embed;
+};
+
+const removeAbsentUsers = async (serverId: string) => {
+  const birthdays = await getBirthdays(serverId);
+  MONTHS.forEach(month => {
+    const monthBirthdays = birthdays[month.toString()];
+
+    if (!monthBirthdays) {
+      return;
+    }
+
+    Object.keys(monthBirthdays).forEach(day => {
+      monthBirthdays[day]
+        .filter((userId: string) => getUsername(serverId, userId) === null)
+        .forEach((userId: string) => removeBirthday(serverId, userId));
+    });
+  });
 };
 
 export const updateList = async (serverId: string) => {
@@ -68,4 +92,6 @@ export const updateList = async (serverId: string) => {
       (sentMessage as Message).pin();
     }
   }
+
+  removeAbsentUsers(serverId);
 };

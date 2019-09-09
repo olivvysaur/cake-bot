@@ -35,6 +35,10 @@ export const announceBirthdays = async () => {
       .map((userId: string) => getUsername(serverId, userId))
       .filter(Boolean);
 
+    if (names.length === 0) {
+      return;
+    }
+
     const startOfList = names.slice(0, -1).join(', ');
     const endOfList = names.slice(-1).join('');
 

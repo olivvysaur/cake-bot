@@ -4,7 +4,7 @@ import schedule from 'node-schedule';
 
 import { COMMANDS } from './commands';
 import { announceBirthdays } from './announce';
-import { addServer, removeServer } from './database';
+import { addServer, removeServer, removeBirthday } from './database';
 
 loadEnv();
 
@@ -29,6 +29,16 @@ client.on('guildCreate', async server => {
 client.on('guildDelete', async server => {
   removeServer(server.id);
   console.log(`Left server ${server.id} (${server.name})`);
+});
+
+client.on('guildMemberRemove', async member => {
+  const serverId = member.guild.id;
+  const userId = member.id;
+
+  console.log(
+    `User ${userId} has left server ${serverId}, removing their birthday.`
+  );
+  removeBirthday(serverId, userId);
 });
 
 client.on('message', async msg => {

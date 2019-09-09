@@ -87,6 +87,14 @@ export const setBirthday = async (
     .set({ month, day });
 };
 
+export const removeBirthday = async (server: string, user: string) => {
+  await ref
+    .child('birthdays')
+    .child(server)
+    .child(user)
+    .remove();
+};
+
 export const getBirthdays = async (
   server: string,
   month?: number,
