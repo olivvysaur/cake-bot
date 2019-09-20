@@ -46,7 +46,7 @@ client.on('message', async msg => {
     return;
   }
 
-  const request = msg.content.split(' ');
+  const request = msg.content.split(' ').filter(word => !!word.length);
   const code = request[1];
   const params = request.slice(2);
 
