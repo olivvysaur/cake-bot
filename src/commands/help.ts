@@ -7,12 +7,12 @@ const displayHelp: CommandFn = (params, msg) => {
 
   Object.keys(COMMANDS).forEach(key => {
     const command = COMMANDS[key];
-    const params = command.params.map(param => `[${param}]`).join(' ');
-    embed.addField(`${key} ${params}`, COMMANDS[key].description, false);
+    const params = command.params.map(param => `<${param}>`).join(' ');
+    embed.addField(`!cb ${key} ${params}`, COMMANDS[key].description, false);
   });
 
   msg.channel.send(
-    'These are all the commands I understand. Remember to @mention me at the start of your command.',
+    'These are all the commands I understand. Remember to use the !cb prefix at the start of your command.',
     embed
   );
 };

@@ -42,7 +42,7 @@ client.on('guildMemberRemove', async member => {
 });
 
 client.on('message', async msg => {
-  if (!msg.isMentioned(client.user)) {
+  if (!msg.isMentioned(client.user) && !msg.content.startsWith('!cb')) {
     return;
   }
 
