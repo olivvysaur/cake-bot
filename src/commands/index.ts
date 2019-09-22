@@ -4,6 +4,7 @@ import { help } from './help';
 import { ping } from './ping';
 import { list } from './list';
 import { set } from './set';
+import { update } from './update';
 import { channel } from './channel';
 import { mentions } from './mentions';
 
@@ -12,6 +13,7 @@ export const COMMANDS: { [code: string]: Command } = {
   // ping,
   // list,
   set,
+  update,
   channel
   // mentions
 };
