@@ -19,7 +19,9 @@ const roleInfo: CommandFn = async (params, msg) => {
   const roleName = params[0].replace(/--/g, ' ');
 
   const allRoles = msg.guild.roles;
-  const role = allRoles.find('name', roleName);
+  const role = allRoles.find(
+    role => role.name.toLowerCase() === roleName.toLowerCase()
+  );
 
   if (!role) {
     const sentMessage = await msg.channel.send("⚠️ I couldn't find that role.");
