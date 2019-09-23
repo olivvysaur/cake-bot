@@ -7,6 +7,11 @@ const displayHelp: CommandFn = (params, msg) => {
 
   Object.keys(COMMANDS).forEach(key => {
     const command = COMMANDS[key];
+
+    if (command.hidden) {
+      return;
+    }
+
     const params = command.params.map(param => `<${param}>`).join(' ');
     embed.addField(`!cb ${key} ${params}`, COMMANDS[key].description, false);
   });

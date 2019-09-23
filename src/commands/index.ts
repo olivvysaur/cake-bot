@@ -7,6 +7,7 @@ import { set } from './set';
 import { update } from './update';
 import { channel } from './channel';
 import { mentions } from './mentions';
+import { role } from './role';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -14,6 +15,7 @@ export const COMMANDS: { [code: string]: Command } = {
   // list,
   set,
   update,
-  channel
-  // mentions
+  channel,
+  // mentions,
+  role
 };

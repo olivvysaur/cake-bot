@@ -6,4 +6,5 @@ export interface Command {
   params: string[];
   description: string;
   fn: CommandFn;
+  hidden?: boolean;
 }
