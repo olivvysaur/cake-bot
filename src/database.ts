@@ -25,7 +25,7 @@ const firebaseConfig = [
 
 admin.initializeApp({
   credential: admin.credential.cert(firebaseConfig),
-  databaseURL: 'https://cake-bot-7d5de.firebaseio.com'
+  databaseURL: process.env.FIREBASE_DATABASE_URL
 });
 
 const db = admin.database();
@@ -105,6 +105,9 @@ export const getBirthdays = async (
     .child(server)
     .once('value');
   const serverUsers = serverUsersData.val();
+  if (!serverUsers) {
+    return [];
+  }
 
   const birthdays = Object.keys(serverUsers).reduce((result: any, user) => {
     const { month, day } = serverUsers[user];
