@@ -1,10 +1,11 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import { config as loadEnv } from 'dotenv';
 import schedule from 'node-schedule';
 
 import { COMMANDS } from './commands';
 import { announceBirthdays } from './announce';
 import { addServer, removeServer, removeBirthday } from './database';
+import { checkNotifications } from './checkNotifications';
 
 loadEnv();
 
@@ -42,6 +43,10 @@ client.on('guildMemberRemove', async member => {
 });
 
 client.on('message', async msg => {
+  if (msg.member && msg.member.id) {
+    checkNotifications(msg.member.id);
+  }
+
   if (!msg.isMentioned(client.user) && !msg.content.startsWith('!cb')) {
     return;
   }

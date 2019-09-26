@@ -1916,6 +1916,11 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
+medusajs@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/medusajs/-/medusajs-1.2.4.tgz#9c4103d9a2447547e157a76bfc1395ef3a77b28f"
+  integrity sha1-nEED2aJEdUfhV6dr/BOV7zp3so8=
+
 micromatch@^3.1.10, micromatch@^3.1.4:
   version "3.1.10"
   resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-3.1.10.tgz#70859bc95c9840952f359a068a3fc49f9ecfac23"

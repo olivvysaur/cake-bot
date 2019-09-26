@@ -187,3 +187,43 @@ export const getServerMentions = async (server: string) => {
     .once('value');
   return mentions.val();
 };
+
+export const addOnlineNotification = async (
+  receiver: string,
+  sender: string,
+  url: string,
+  senderName: string
+) => {
+  await ref
+    .child('onlineNotifications')
+    .child(receiver)
+    .child(sender)
+    .set({ url, senderName });
+};
+
+export const getOnlineNotifications = async (user: string) => {
+  const notifications = await ref
+    .child('onlineNotifications')
+    .child(user)
+    .once('value');
+  return notifications.val();
+};
+
+export const getOnlineNotificationBetweenUsers = async (
+  receiver: string,
+  sender: string
+) => {
+  const notification = await ref
+    .child('onlineNotifications')
+    .child(receiver)
+    .child(sender)
+    .once('value');
+  return notification.val();
+};
+
+export const deleteOnlineNotifications = async (user: string) => {
+  await ref
+    .child('onlineNotifications')
+    .child(user)
+    .remove();
+};

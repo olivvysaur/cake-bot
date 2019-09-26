@@ -8,6 +8,8 @@ import { update } from './update';
 import { channel } from './channel';
 import { mentions } from './mentions';
 import { role } from './role';
+import { notify } from './notify';
+import { user } from './user';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -17,5 +19,7 @@ export const COMMANDS: { [code: string]: Command } = {
   update,
   channel,
   // mentions,
-  role
+  role,
+  notify,
+  user
 };
