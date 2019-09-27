@@ -16,7 +16,7 @@ const roleInfo: CommandFn = async (params, msg) => {
     return;
   }
 
-  const roleName = params[0].replace(/--/g, ' ');
+  const roleName = params.join(' ');
 
   const allRoles = msg.guild.roles;
   const role = allRoles.find(
