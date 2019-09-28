@@ -97,7 +97,6 @@ const listColours = async (serverId: string) => {
   });
 
   const canvasWidth = columnWidths.reduce((acc, val) => acc + val, 0);
-  console.log(columnWidths, canvasWidth);
 
   const canvas = createCanvas(
     canvasWidth,
