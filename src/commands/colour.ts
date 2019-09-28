@@ -314,7 +314,7 @@ const getHelp = (showModCommands = false) => {
       'Adds a colour using an already existing role, e.g. "color import eggplant".'
     );
     embed.addField(
-      '!cb colour pin',
+      '!cb colour pin Ⓜ',
       'Pins the colour list to the current channel.'
     );
   }
@@ -355,7 +355,7 @@ const colourCommand: CommandFn = async (params, msg) => {
     return msg.channel.send(message);
   }
 
-  if (subCommand === 'pin') {
+  if (subCommand === 'pin' && isMod) {
     const channel = msg.channel;
     if (channel instanceof TextChannel) {
       await pinColourList(serverId, channel);
