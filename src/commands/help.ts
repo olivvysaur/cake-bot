@@ -25,7 +25,7 @@ const displayHelp: CommandFn = async (params, msg) => {
 
     const params = command.params.map(param => `<${param}>`).join(' ');
     embed.addField(
-      `!cb ${key} ${params} ${command.requiresMod ? 'Ⓜ️' : ''}`,
+      `!cb ${key} ${params} ${command.requiresMod ? 'Ⓜ' : ''}`,
       COMMANDS[key].description,
       false
     );

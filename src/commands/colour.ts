@@ -267,26 +267,28 @@ const importColour = async (serverId: string, roleName: string) => {
 
 const getHelp = (showModCommands = false) => {
   const embed = new RichEmbed();
-  embed.title = 'Colour help';
-  embed.addField('colour <number>', 'Sets your own colour, e.g. "colour 4".');
-  embed.addField('colour list', 'Displays all available colours.');
+  embed.addField(
+    '!cb colour <number>',
+    'Sets your own colour, e.g. "colour 4".'
+  );
+  embed.addField('!cb colour list', 'Displays all available colours.');
   if (showModCommands) {
-    embed.description = 'Commands marked with Ⓜ️ require mod privilege.';
+    embed.description = 'Commands marked with Ⓜ require mod privilege.';
 
     embed.addField(
-      'colour add <hex> <name> ️Ⓜ️',
+      '!cb colour add <hex> <name> ️Ⓜ',
       'Add a new colour with the given name and hex code, e.g. "colour add a86d3a bread".'
     );
     embed.addField(
-      'colour delete <number> Ⓜ️',
+      '!cb colour delete <number> Ⓜ',
       'Delete the specified colour, e.g. "colour delete 7".'
     );
     embed.addField(
-      'colour rename <number> <name> Ⓜ️',
+      '!cb colour rename <number> <name> Ⓜ',
       'Rename an existing colour, e.g. "colour rename 7 biscuit".'
     );
     embed.addField(
-      'colour import <role> Ⓜ️',
+      '!cb colour import <role> Ⓜ',
       'Add a colour using an already existing role, e.g. "color import eggplant".'
     );
   }
