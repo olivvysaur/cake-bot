@@ -1,4 +1,10 @@
-import { GuildMember, RichEmbed, Attachment } from 'discord.js';
+import {
+  GuildMember,
+  RichEmbed,
+  Attachment,
+  TextChannel,
+  Message
+} from 'discord.js';
 import { createCanvas } from 'canvas';
 
 import { Command, CommandFn } from '../interfaces';
@@ -119,6 +125,22 @@ const listColours = async (serverId: string) => {
   });
 
   return new Attachment(canvas.toBuffer(), 'color_list.png');
+};
+
+const pinColourList = async (serverId: string, channel: TextChannel) => {
+  const list = await listColours(serverId);
+  const sentMessage = await channel.send(list);
+
+  if (!(list instanceof Attachment)) {
+    return;
+  }
+
+  const pins = await channel.fetchPinnedMessages();
+  pins
+    .filter(pin => pin.member.id === client.user.id)
+    .forEach(pin => pin.unpin());
+
+  (sentMessage as Message).pin();
 };
 
 const createColour = async (serverId: string, hex: string, name: string) => {
@@ -277,19 +299,23 @@ const getHelp = (showModCommands = false) => {
 
     embed.addField(
       '!cb colour add <hex> <name> ️Ⓜ',
-      'Add a new colour with the given name and hex code, e.g. "colour add a86d3a bread".'
+      'Adds a new colour with the given name and hex code, e.g. "colour add a86d3a bread".'
     );
     embed.addField(
       '!cb colour delete <number> Ⓜ',
-      'Delete the specified colour, e.g. "colour delete 7".'
+      'Deletes the specified colour, e.g. "colour delete 7".'
     );
     embed.addField(
       '!cb colour rename <number> <name> Ⓜ',
-      'Rename an existing colour, e.g. "colour rename 7 biscuit".'
+      'Renames an existing colour, e.g. "colour rename 7 biscuit".'
     );
     embed.addField(
       '!cb colour import <role> Ⓜ',
-      'Add a colour using an already existing role, e.g. "color import eggplant".'
+      'Adds a colour using an already existing role, e.g. "color import eggplant".'
+    );
+    embed.addField(
+      '!cb colour pin',
+      'Pins the colour list to the current channel.'
     );
   }
   return embed;
@@ -327,6 +353,14 @@ const colourCommand: CommandFn = async (params, msg) => {
   if (subCommand === 'list') {
     const message = await listColours(serverId);
     return msg.channel.send(message);
+  }
+
+  if (subCommand === 'pin') {
+    const channel = msg.channel;
+    if (channel instanceof TextChannel) {
+      await pinColourList(serverId, channel);
+    }
+    return;
   }
 
   if (subCommand === 'add' && isMod) {
