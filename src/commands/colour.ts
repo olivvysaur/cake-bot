@@ -249,10 +249,10 @@ const importColour = async (serverId: string, roleName: string) => {
     return `⚠️ I already know about ${matchedRole.name}.`;
   }
 
-  const { id, name, hexColor: hex } = matchedRole;
+  const { id, name, hexColor } = matchedRole;
   const colourData: Colour = {
     name,
-    hex,
+    hex: hexColor.replace('#', ''),
     role: id
   };
   await DB.pushAtPath(`colours/${serverId}`, colourData);
@@ -260,7 +260,7 @@ const importColour = async (serverId: string, roleName: string) => {
   const newColourNumber = colourCount + 1;
 
   const embed = new RichEmbed();
-  embed.setColor(hex);
+  embed.setColor(hexColor);
   embed.title = 'Colour created';
   embed.description = `Successfully imported colour **${name}** (#${newColourNumber}).`;
   return embed;
