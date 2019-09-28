@@ -361,6 +361,5 @@ export const colour: Command = {
   description:
     'Manages colours, Iris style. Get more info using "colour help".',
   fn: colourCommand,
-  aliases: ['color'],
-  hidden: true
+  aliases: ['color']
 };
