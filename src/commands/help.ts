@@ -1,9 +1,16 @@
 import { Command, CommandFn } from '../interfaces';
 import { COMMANDS } from './index';
 import { RichEmbed } from 'discord.js';
+import { DB } from '../database';
 
-const displayHelp: CommandFn = (params, msg) => {
+const displayHelp: CommandFn = async (params, msg) => {
   const embed = new RichEmbed();
+
+  const userRoles = msg.member.roles;
+  const modRoles = await DB.getArrayAtPath(`modRoles/${msg.guild.id}`);
+  const isMod = !!modRoles.length
+    ? !!userRoles.find(role => modRoles.includes(role.id))
+    : true;
 
   Object.keys(COMMANDS).forEach(key => {
     const command = COMMANDS[key];
@@ -12,8 +19,20 @@ const displayHelp: CommandFn = (params, msg) => {
       return;
     }
 
+    if (command.requiresMod && !isMod) {
+      return;
+    }
+
     const params = command.params.map(param => `<${param}>`).join(' ');
-    embed.addField(`!cb ${key} ${params}`, COMMANDS[key].description, false);
+    embed.addField(
+      `!cb ${key} ${params} ${command.requiresMod ? 'Ⓜ️' : ''}`,
+      COMMANDS[key].description,
+      false
+    );
+
+    if (isMod) {
+      embed.description = 'Commands marked with Ⓜ require mod privilege.';
+    }
   });
 
   msg.channel.send(
@@ -25,5 +44,6 @@ const displayHelp: CommandFn = (params, msg) => {
 export const help: Command = {
   params: [],
   description: 'Shows this help message.',
-  fn: displayHelp
+  fn: displayHelp,
+  aliases: ['?']
 };

@@ -2,9 +2,9 @@ import Discord, { Message } from 'discord.js';
 import { config as loadEnv } from 'dotenv';
 import schedule from 'node-schedule';
 
-import { COMMANDS } from './commands';
+import { COMMANDS, findCommand } from './commands';
 import { announceBirthdays } from './announce';
-import { addServer, removeServer, removeBirthday } from './database';
+import { addServer, removeServer, removeBirthday, DB } from './database';
 import { checkNotifications } from './checkNotifications';
 
 loadEnv();
@@ -55,9 +55,22 @@ client.on('message', async msg => {
   const code = request[1];
   const params = request.slice(2);
 
-  const command = COMMANDS[code];
+  const command = findCommand(code);
   if (!command) {
     return;
+  }
+
+  if (command.requiresMod) {
+    const userRoles = msg.member.roles;
+    const modRoles = await DB.getArrayAtPath(`modRoles/${msg.guild.id}`);
+
+    if (
+      !!modRoles.length &&
+      !userRoles.find(role => modRoles.includes(role.id))
+    ) {
+      console.log('tried to execute mod command without permission');
+      return;
+    }
   }
 
   command.fn(params, msg);

@@ -31,6 +31,36 @@ admin.initializeApp({
 const db = admin.database();
 const ref = db.ref('/');
 
+export class DB {
+  static getPath = async (path: string) => {
+    const data = await ref.child(path).once('value');
+    return data.val();
+  };
+
+  static setPath = async (path: string, value: any) => {
+    await ref.child(path).set(value);
+  };
+
+  static pushAtPath = async (path: string, value: any) => {
+    await ref.child(path).push(value);
+  };
+
+  static getArrayAtPath = async (path: string) => {
+    const data = await ref.child(path).once('value');
+    const value = data.val();
+
+    if (!value) {
+      return [];
+    }
+
+    return Object.keys(value).map(key => value[key]);
+  };
+
+  static deletePath = async (path: string) => {
+    await ref.child(path).remove();
+  };
+}
+
 export const getNextAnnouncementDate = async () => {
   const data = await ref.child('announcementDate').once('value');
   return data.val();

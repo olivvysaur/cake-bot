@@ -32,5 +32,5 @@ export const channel: Command = {
   description:
     'Creates and pins a birthday list in the specified channel, e.g. "channel #birthdays".',
   fn: setChannel,
-  hidden: true
+  requiresMod: true
 };

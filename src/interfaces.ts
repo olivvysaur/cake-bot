@@ -7,4 +7,6 @@ export interface Command {
   description: string;
   fn: CommandFn;
   hidden?: boolean;
+  aliases?: string[];
+  requiresMod?: boolean;
 }

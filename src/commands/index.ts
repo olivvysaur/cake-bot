@@ -10,6 +10,9 @@ import { mentions } from './mentions';
 import { role } from './role';
 import { notify } from './notify';
 import { user } from './user';
+import { colour } from './colour';
+import { mod } from './mod';
+import { unmod } from './unmod';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -21,5 +24,25 @@ export const COMMANDS: { [code: string]: Command } = {
   // mentions,
   role,
   notify,
-  user
+  user,
+  colour,
+  mod,
+  unmod
+};
+
+export const findCommand = (name: string) => {
+  const foundName = Object.keys(COMMANDS).find(command => {
+    if (command === name) {
+      return true;
+    }
+
+    const aliases = COMMANDS[command].aliases || [];
+    return aliases.includes(name);
+  });
+
+  if (!foundName) {
+    return undefined;
+  }
+
+  return COMMANDS[foundName];
 };
