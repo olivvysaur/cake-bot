@@ -18,13 +18,18 @@ const setupNotification: CommandFn = async (params, msg) => {
     return;
   }
 
+  const joinedParams = params.join(' ');
+  const endOfUsername = joinedParams.indexOf('--');
+  const usernameQuery = joinedParams
+    .slice(0, endOfUsername === -1 ? undefined : endOfUsername)
+    .trim();
+
   const serverId = msg.guild.id;
-  const enteredUsername = params[0];
-  const foundUser = findUser(enteredUsername, serverId);
+  const foundUser = findUser(usernameQuery, serverId);
 
   if (!foundUser) {
     const sentMessage = await msg.channel.send(
-      `⚠️ I can't find a user named "${enteredUsername}".`
+      `⚠️ I can't find a user named "${usernameQuery}".`
     );
     setTimeout(() => {
       msg.delete();
