@@ -59,11 +59,17 @@ const setupNotification: CommandFn = async (params, msg) => {
   }
 
   await addOnlineNotification(receiverId, senderId, link, senderName);
-  msg.react('✅');
+  const sentMessage = await msg.channel.send(
+    `✅ Got it! Next time ${foundUser.displayName} is active I'll send a notification.`
+  );
+  setTimeout(() => {
+    (sentMessage as Message).delete();
+  }, 5000);
+  return;
 };
 
 export const notify: Command = {
   params: ['username'],
-  description: `Notifies the specified person next time they're online with a link to your message. E.g. "notify valentine"`,
+  description: `Notifies the specified person next time they're online with a link to your message, e.g. "notify valentine". Add a comment by putting two dashes after the person's name, e.g. "notify valentine -- check this out!".`,
   fn: setupNotification
 };
