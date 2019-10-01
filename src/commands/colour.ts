@@ -349,8 +349,7 @@ const colourCommand: CommandFn = async (params, msg) => {
 
   if (subCommand === 'help') {
     const message = getHelp(isMod);
-    const sentMessage = await msg.channel.send(message);
-    return deleteAfterDelay(msg, sentMessage);
+    return msg.channel.send(message);
   }
 
   // if (subCommand === 'list') {
