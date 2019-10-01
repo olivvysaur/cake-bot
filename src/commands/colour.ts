@@ -10,6 +10,7 @@ import { createCanvas } from 'canvas';
 import { Command, CommandFn } from '../interfaces';
 import { client } from '..';
 import { DB } from '../database';
+import { deleteAfterDelay } from '../messages';
 
 interface Colour {
   name: string;
@@ -293,7 +294,7 @@ const getHelp = (showModCommands = false) => {
     '!cb colour <number>',
     'Sets your own colour, e.g. "colour 4".'
   );
-  embed.addField('!cb colour list', 'Displays all available colours.');
+  // embed.addField('!cb colour list', 'Displays all available colours.');
   if (showModCommands) {
     embed.description = 'Commands marked with Ⓜ require mod privilege.';
 
@@ -339,7 +340,8 @@ const colourCommand: CommandFn = async (params, msg) => {
   const setNumber = subCommand === 'remove' ? 0 : parseInt(subCommand);
   if (!isNaN(setNumber)) {
     const message = await setColour(serverId, user, setNumber);
-    return msg.channel.send(message);
+    const sentMessage = await msg.channel.send(message);
+    return deleteAfterDelay(msg, sentMessage);
   }
 
   const chosenColor = parseInt(params[1]);
@@ -347,20 +349,22 @@ const colourCommand: CommandFn = async (params, msg) => {
 
   if (subCommand === 'help') {
     const message = getHelp(isMod);
-    return msg.channel.send(message);
+    const sentMessage = await msg.channel.send(message);
+    return deleteAfterDelay(msg, sentMessage);
   }
 
-  if (subCommand === 'list') {
-    const message = await listColours(serverId);
-    return msg.channel.send(message);
-  }
+  // if (subCommand === 'list') {
+  //   const message = await listColours(serverId);
+  //   const sentMessage = await msg.channel.send(message);
+  //   return deleteAfterDelay(msg, sentMessage);
+  // }
 
   if (subCommand === 'pin' && isMod) {
     const channel = msg.channel;
     if (channel instanceof TextChannel) {
       await pinColourList(serverId, channel);
     }
-    return;
+    return deleteAfterDelay(msg);
   }
 
   if (subCommand === 'add' && isMod) {
@@ -369,7 +373,8 @@ const colourCommand: CommandFn = async (params, msg) => {
       params[1],
       params.slice(2).join(' ')
     );
-    return msg.channel.send(message);
+    const sentMessage = await msg.channel.send(message);
+    return deleteAfterDelay(msg, sentMessage);
   }
 
   if (subCommand === 'rename' && isValid && isMod) {
@@ -378,17 +383,20 @@ const colourCommand: CommandFn = async (params, msg) => {
       chosenColor,
       params.slice(2).join(' ')
     );
-    return msg.channel.send(message);
+    const sentMessage = await msg.channel.send(message);
+    return deleteAfterDelay(msg, sentMessage);
   }
 
   if (subCommand === 'delete' && isValid && isMod) {
     const message = await deleteColour(serverId, chosenColor);
-    return msg.channel.send(message);
+    const sentMessage = await msg.channel.send(message);
+    return deleteAfterDelay(msg, sentMessage);
   }
 
   if (subCommand === 'import' && isMod) {
     const message = await importColour(serverId, params.slice(1).join(' '));
-    return msg.channel.send(message);
+    const sentMessage = await msg.channel.send(message);
+    return deleteAfterDelay(msg, sentMessage);
   }
 };
 
