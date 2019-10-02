@@ -14,6 +14,7 @@ import { colour } from './colour';
 import { mod } from './mod';
 import { unmod } from './unmod';
 import { echo } from './echo';
+import { logging } from './logging';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -29,7 +30,8 @@ export const COMMANDS: { [code: string]: Command } = {
   colour,
   mod,
   unmod,
-  echo
+  echo,
+  logging
 };
 
 export const findCommand = (name: string) => {

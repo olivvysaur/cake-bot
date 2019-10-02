@@ -11,6 +11,7 @@ import { Command, CommandFn } from '../interfaces';
 import { client } from '..';
 import { DB } from '../database';
 import { deleteAfterDelay } from '../messages';
+import { Log } from '../logging';
 
 interface Colour {
   name: string;
@@ -53,6 +54,13 @@ const setColour = async (
 
   const roleId = chosenColor.role;
   await user.addRole(roleId);
+
+  Log.send(
+    'Colour changed',
+    `Changed to #${colour} (**${chosenColor.name}**).`,
+    serverId,
+    { user, color: chosenColor.hex }
+  );
 
   const embed = new RichEmbed();
   embed.setColor(chosenColor.hex);
@@ -144,7 +152,12 @@ const pinColourList = async (serverId: string, channel: TextChannel) => {
   (sentMessage as Message).pin();
 };
 
-const createColour = async (serverId: string, hex: string, name: string) => {
+const createColour = async (
+  serverId: string,
+  hex: string,
+  name: string,
+  creator: GuildMember
+) => {
   const server = client.guilds.get(serverId);
   if (!server) {
     return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
@@ -173,6 +186,13 @@ const createColour = async (serverId: string, hex: string, name: string) => {
 
   const newColourNumber = colourCount + 1;
 
+  Log.send(
+    'Colour created',
+    `**${name}** created as #${newColourNumber} with hex **#${hex}**.`,
+    serverId,
+    { user: creator, color: hex }
+  );
+
   const embed = new RichEmbed();
   embed.setColor(hex);
   embed.title = 'Colour created';
@@ -180,7 +200,12 @@ const createColour = async (serverId: string, hex: string, name: string) => {
   return embed;
 };
 
-const renameColour = async (serverId: string, colour: number, name: string) => {
+const renameColour = async (
+  serverId: string,
+  colour: number,
+  name: string,
+  user: GuildMember
+) => {
   const server = client.guilds.get(serverId);
   if (!server) {
     return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
@@ -210,6 +235,13 @@ const renameColour = async (serverId: string, colour: number, name: string) => {
   };
   await DB.setPath(`colours/${serverId}/${chosenKey}`, updatedColor);
 
+  Log.send(
+    'Colour renamed',
+    `**${oldName}** (#${colour}) renamed to **${name}**.`,
+    serverId,
+    { user, color: chosenColor.hex }
+  );
+
   const embed = new RichEmbed();
   embed.setColor(chosenColor.hex);
   embed.title = 'Colour renamed';
@@ -217,7 +249,11 @@ const renameColour = async (serverId: string, colour: number, name: string) => {
   return embed;
 };
 
-const deleteColour = async (serverId: string, colour: number) => {
+const deleteColour = async (
+  serverId: string,
+  colour: number,
+  user: GuildMember
+) => {
   const server = client.guilds.get(serverId);
   if (!server) {
     return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
@@ -242,6 +278,16 @@ const deleteColour = async (serverId: string, colour: number) => {
 
   await DB.deletePath(`colours/${serverId}/${chosenKey}`);
 
+  Log.send(
+    'Colour deleted',
+    `**${chosenColor.name}** (#${colour}) deleted.`,
+    serverId,
+    {
+      user,
+      color: chosenColor.hex
+    }
+  );
+
   const embed = new RichEmbed();
   embed.setColor(chosenColor.hex);
   embed.title = 'Colour renamed';
@@ -249,7 +295,11 @@ const deleteColour = async (serverId: string, colour: number) => {
   return embed;
 };
 
-const importColour = async (serverId: string, roleName: string) => {
+const importColour = async (
+  serverId: string,
+  roleName: string,
+  user: GuildMember
+) => {
   const server = client.guilds.get(serverId);
   if (!server) {
     return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
@@ -280,6 +330,13 @@ const importColour = async (serverId: string, roleName: string) => {
   await DB.pushAtPath(`colours/${serverId}`, colourData);
 
   const newColourNumber = colourCount + 1;
+
+  Log.send(
+    'Colour imported',
+    `**${name}** imported from role ${matchedRole} as #${newColourNumber}.`,
+    serverId,
+    { user, color: hexColor }
+  );
 
   const embed = new RichEmbed();
   embed.setColor(hexColor);
@@ -370,7 +427,8 @@ const colourCommand: CommandFn = async (params, msg) => {
     const message = await createColour(
       serverId,
       params[1],
-      params.slice(2).join(' ')
+      params.slice(2).join(' '),
+      msg.member
     );
     const sentMessage = await msg.channel.send(message);
     return deleteAfterDelay(msg, sentMessage);
@@ -380,20 +438,25 @@ const colourCommand: CommandFn = async (params, msg) => {
     const message = await renameColour(
       serverId,
       chosenColor,
-      params.slice(2).join(' ')
+      params.slice(2).join(' '),
+      msg.member
     );
     const sentMessage = await msg.channel.send(message);
     return deleteAfterDelay(msg, sentMessage);
   }
 
   if (subCommand === 'delete' && isValid && isMod) {
-    const message = await deleteColour(serverId, chosenColor);
+    const message = await deleteColour(serverId, chosenColor, msg.member);
     const sentMessage = await msg.channel.send(message);
     return deleteAfterDelay(msg, sentMessage);
   }
 
   if (subCommand === 'import' && isMod) {
-    const message = await importColour(serverId, params.slice(1).join(' '));
+    const message = await importColour(
+      serverId,
+      params.slice(1).join(' '),
+      msg.member
+    );
     const sentMessage = await msg.channel.send(message);
     return deleteAfterDelay(msg, sentMessage);
   }

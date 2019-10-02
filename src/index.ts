@@ -6,6 +6,7 @@ import { COMMANDS, findCommand } from './commands';
 import { announceBirthdays } from './announce';
 import { addServer, removeServer, removeBirthday, DB } from './database';
 import { checkNotifications } from './checkNotifications';
+import { Log } from './logging';
 
 loadEnv();
 
@@ -20,6 +21,14 @@ client.on('ready', () => {
 
   schedule.scheduleJob(rule, announceBirthdays);
   console.log('Scheduled announcement for 5:00 AM.');
+
+  // client.guilds.forEach(guild =>
+  //   Log.green(
+  //     'Connected',
+  //     'Cakebot is connected to Discord and ready to receive commands.',
+  //     guild.id
+  //   )
+  // );
 });
 
 client.on('guildCreate', async server => {
@@ -40,6 +49,13 @@ client.on('guildMemberRemove', async member => {
     `User ${userId} has left server ${serverId}, removing their birthday.`
   );
   removeBirthday(serverId, userId);
+
+  Log.red(
+    'Birthday removed',
+    'User left the server so their birthday was removed.',
+    serverId,
+    { user: member }
+  );
 });
 
 client.on('message', async msg => {
