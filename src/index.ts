@@ -47,7 +47,10 @@ client.on('message', async msg => {
     checkNotifications(msg.member.id);
   }
 
-  if (!msg.isMentioned(client.user) && !msg.content.startsWith('!cb')) {
+  if (
+    !msg.isMentioned(client.user) &&
+    !msg.content.toLowerCase().startsWith('!cb')
+  ) {
     return;
   }
 
