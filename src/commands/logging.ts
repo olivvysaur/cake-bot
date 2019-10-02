@@ -24,7 +24,10 @@ const setLogChannel: CommandFn = async (params, msg) => {
     );
     await DB.deletePath(`/logging/${serverId}`);
     await Medusa.put(`logging.${serverId}`, null, 86400 * 1000);
-    return msg.channel.send('✅ Logging disabled for this server.');
+    const sentMessage = await msg.channel.send(
+      '✅ Logging disabled for this server.'
+    );
+    deleteAfterDelay(msg, sentMessage);
   }
 
   const maybeChannel = params[0];
@@ -46,9 +49,10 @@ const setLogChannel: CommandFn = async (params, msg) => {
     `Logs will be sent to ${params[0]} for this server.`,
     serverId
   );
-  return msg.channel.send(
+  const sentMessage = await msg.channel.send(
     `✅ Logging enabled in ${params[0]} for this server.`
   );
+  deleteAfterDelay(msg, sentMessage);
 };
 
 export const logging: Command = {
