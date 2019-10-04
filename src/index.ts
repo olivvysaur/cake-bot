@@ -45,6 +45,11 @@ client.on('guildMemberRemove', async member => {
   const serverId = member.guild.id;
   const userId = member.id;
 
+  const userBirthday = await DB.getPath(`birthdays/${serverId}/${userId}`);
+  if (!userBirthday) {
+    return;
+  }
+
   console.log(
     `User ${userId} has left server ${serverId}, removing their birthday.`
   );
