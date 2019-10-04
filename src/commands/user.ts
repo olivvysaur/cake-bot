@@ -1,6 +1,8 @@
+import { RichEmbed } from 'discord.js';
+
 import { Command, CommandFn } from '../interfaces';
 import { findUser } from '../users';
-import { RichEmbed } from 'discord.js';
+import { timeSince } from '../dates';
 
 const getUserInfo: CommandFn = (params, msg) => {
   const serverId = msg.guild.id;
@@ -16,24 +18,22 @@ const getUserInfo: CommandFn = (params, msg) => {
   const {
     displayColor,
     displayName,
-    nickname,
     joinedAt,
     colorRole,
-    user: { avatarURL, bot, tag, username }
+    user: { avatarURL, bot, tag, id }
   } = user;
+
+  const timeSinceJoining = timeSince(joinedAt);
 
   const embed = new RichEmbed();
   embed.title = `Info about user ${displayName}`;
   embed.author = { name: displayName, icon_url: avatarURL };
-  embed.footer = { text: 'Member since' };
-  embed.timestamp = joinedAt;
+  embed.footer = { text: `User ID: ${id}` };
   embed.color = displayColor;
-  if (!!nickname) {
-    embed.addField('Also known as', username, true);
-  }
   embed.addField('Discord tag', tag, true);
   embed.addField('Colour', colorRole, true);
-  embed.addField('Bot', bot ? 'Yes' : 'No');
+  embed.addField('Bot', bot ? 'Yes' : 'No', true);
+  embed.addField('Member for', timeSinceJoining.asString);
 
   msg.channel.send(embed);
 };
