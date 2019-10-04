@@ -7,7 +7,7 @@ import { timeSince } from '../dates';
 const getUserInfo: CommandFn = (params, msg) => {
   const serverId = msg.guild.id;
 
-  const query = params[0];
+  const query = params.join(' ');
   const user = findUser(query, serverId);
 
   if (!user) {
