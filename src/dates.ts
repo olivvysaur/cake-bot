@@ -3,22 +3,36 @@ import { pluralise } from './strings';
 
 const SLASH_FORMAT = /([0-9]{1,2})(\/|\s)([0-9]{1,2})/;
 
+const KNOWN_LEAP_YEAR = 2020;
+
 export const parseDate = (date: string) => {
   const slashMatch = date.match(SLASH_FORMAT);
   if (slashMatch) {
     const firstNumber = parseInt(slashMatch[1]);
     const secondNumber = parseInt(slashMatch[3]);
 
+    // Nasty hack to support 29th Feburary, since moment usually defaults
+    // to using the current year (so 29/2 would be invalid)
+    if (
+      (firstNumber === 29 && secondNumber === 2) ||
+      (firstNumber === 2 && secondNumber === 29)
+    ) {
+      return moment([KNOWN_LEAP_YEAR, 1, 29]);
+    }
+
     if (firstNumber <= 12 && secondNumber <= 12) {
       if (firstNumber === secondNumber) {
-        return moment(date, 'D/M');
+        return moment(`${firstNumber}/${secondNumber}`, 'D/M');
       } else {
-        return [moment(date, 'D/M'), moment(date, 'M/D')];
+        return [
+          moment(`${firstNumber}/${secondNumber}`, 'D/M'),
+          moment(`${secondNumber}/${firstNumber}`, 'M/D')
+        ];
       }
     } else if (firstNumber > 12 && secondNumber <= 12) {
-      return moment(date, 'D/M');
+      return moment(`${firstNumber}/${secondNumber}`, 'D/M');
     } else if (firstNumber <= 12 && secondNumber > 12) {
-      return moment(date, 'M/D');
+      return moment(`${secondNumber}/${firstNumber}`, 'M/D');
     } else {
       return null;
     }
