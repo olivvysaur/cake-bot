@@ -7,6 +7,7 @@ import { announceBirthdays } from './announce';
 import { addServer, removeServer, removeBirthday, DB } from './database';
 import { checkNotifications } from './checkNotifications';
 import { Log } from './logging';
+import { updateList } from './updateList';
 
 loadEnv();
 
@@ -54,6 +55,7 @@ client.on('guildMemberRemove', async member => {
     `User ${userId} has left server ${serverId}, removing their birthday.`
   );
   removeBirthday(serverId, userId);
+  updateList(serverId);
 
   Log.red(
     'Birthday removed',
