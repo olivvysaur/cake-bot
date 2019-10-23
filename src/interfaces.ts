@@ -10,3 +10,8 @@ export interface Command {
   aliases?: string[];
   requiresMod?: boolean;
 }
+
+export interface Shortcut {
+  trigger: string;
+  command: string;
+}

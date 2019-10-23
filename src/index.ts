@@ -8,10 +8,42 @@ import { addServer, removeServer, removeBirthday, DB } from './database';
 import { checkNotifications } from './checkNotifications';
 import { Log } from './logging';
 import { updateList } from './updateList';
+import { PREFIX } from './constants';
+import { checkShortcuts } from './checkShortcuts';
 
 loadEnv();
 
 export const client = new Discord.Client();
+
+export const runCommand = async (msg: Message) => {
+  const request = msg.content
+    .replace(PREFIX, '')
+    .split(' ')
+    .filter(word => !!word.length);
+  const code = request[0];
+  const params = request.slice(1);
+
+  const command = findCommand(code);
+  if (!command) {
+    checkShortcuts(msg);
+    return;
+  }
+
+  if (command.requiresMod) {
+    const userRoles = msg.member.roles;
+    const modRoles = await DB.getArrayAtPath(`modRoles/${msg.guild.id}`);
+
+    if (
+      !!modRoles.length &&
+      !userRoles.find(role => modRoles.includes(role.id))
+    ) {
+      console.log('tried to execute mod command without permission');
+      return;
+    }
+  }
+
+  command.fn(params, msg);
+};
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -72,34 +104,12 @@ client.on('message', async msg => {
 
   if (
     !msg.isMentioned(client.user) &&
-    !msg.content.toLowerCase().startsWith('!cb')
+    !msg.content.toLowerCase().startsWith(PREFIX)
   ) {
     return;
   }
 
-  const request = msg.content.split(' ').filter(word => !!word.length);
-  const code = request[1];
-  const params = request.slice(2);
-
-  const command = findCommand(code);
-  if (!command) {
-    return;
-  }
-
-  if (command.requiresMod) {
-    const userRoles = msg.member.roles;
-    const modRoles = await DB.getArrayAtPath(`modRoles/${msg.guild.id}`);
-
-    if (
-      !!modRoles.length &&
-      !userRoles.find(role => modRoles.includes(role.id))
-    ) {
-      console.log('tried to execute mod command without permission');
-      return;
-    }
-  }
-
-  command.fn(params, msg);
+  runCommand(msg);
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
