@@ -16,6 +16,7 @@ import { unmod } from './unmod';
 import { echo } from './echo';
 import { logging } from './logging';
 import { shortcut } from './shortcut';
+import { prompt } from './prompt';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -33,7 +34,8 @@ export const COMMANDS: { [code: string]: Command } = {
   unmod,
   echo,
   logging,
-  shortcut
+  shortcut,
+  prompt
 };
 
 export const findCommand = (name: string) => {
