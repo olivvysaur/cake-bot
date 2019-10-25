@@ -382,20 +382,20 @@ const colourStats = async (serverId: string) => {
     .sort((a, b) => (a.count < b.count ? 1 : a.count > b.count ? -1 : 0));
 
   const top = ranking
-    .slice(0, 5)
+    .slice(0, 10)
     .map(item => `${item.name} - ${pluralise(item.count, 'person', 'people')}`)
     .join('\n');
 
   const bottom = ranking
-    .slice(-5)
+    .slice(-10)
     .reverse()
     .map(item => `${item.name} - ${pluralise(item.count, 'person', 'people')}`)
     .join('\n');
 
   const embed = new RichEmbed();
   embed.title = 'Colour stats';
-  embed.addField('Top 5', top, true);
-  embed.addField('Bottom 5', bottom, true);
+  embed.addField('Top 10', top, true);
+  embed.addField('Bottom 10', bottom, true);
   embed.addField('Total colours', ranking.length, true);
   embed.setColor(ranking[0].hex);
 
