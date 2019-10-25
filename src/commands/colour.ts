@@ -12,6 +12,8 @@ import { client } from '..';
 import { DB } from '../database';
 import { deleteAfterDelay } from '../messages';
 import { Log } from '../logging';
+import { notUndefined } from '../notUndefined';
+import { pluralise } from '../strings';
 
 interface Colour {
   name: string;
@@ -345,11 +347,70 @@ const importColour = async (
   return embed;
 };
 
+const colourStats = async (serverId: string) => {
+  const server = client.guilds.get(serverId);
+  if (!server) {
+    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+  }
+
+  const serverColours: Colour[] = await DB.getArrayAtPath(
+    `colours/${serverId}`
+  );
+  if (!serverColours.length) {
+    return '⚠️ No colours have been set up.';
+  }
+
+  const ranking = serverColours
+    .map(colour => {
+      const { name, hex, role: roleId } = colour;
+
+      const role = server.roles.get(roleId);
+      if (!role) {
+        console.log(
+          `Colour stats: Role ${roleId} in server ${serverId} no longer exists.`
+        );
+        return undefined;
+      }
+
+      return {
+        name,
+        hex,
+        count: role.members.size
+      };
+    })
+    .filter(notUndefined)
+    .sort((a, b) => (a.count < b.count ? 1 : a.count > b.count ? -1 : 0));
+
+  const top = ranking
+    .slice(0, 5)
+    .map(item => `${item.name} - ${pluralise(item.count, 'person', 'people')}`)
+    .join('\n');
+
+  const bottom = ranking
+    .slice(-5)
+    .reverse()
+    .map(item => `${item.name} - ${pluralise(item.count, 'person', 'people')}`)
+    .join('\n');
+
+  const embed = new RichEmbed();
+  embed.title = 'Colour stats';
+  embed.addField('Top 5', top, true);
+  embed.addField('Bottom 5', bottom, true);
+  embed.addField('Total colours', ranking.length, true);
+  embed.setColor(ranking[0].hex);
+
+  return embed;
+};
+
 const getHelp = (showModCommands = false) => {
   const embed = new RichEmbed();
   embed.addField(
     '!cb colour <number>',
     'Sets your own colour, e.g. "colour 4".'
+  );
+  embed.addField(
+    '!cb colour stats',
+    'Shows stats about colours in the server.'
   );
   // embed.addField('!cb colour list', 'Displays all available colours.');
   if (showModCommands) {
@@ -414,6 +475,11 @@ const colourCommand: CommandFn = async (params, msg) => {
   //   const sentMessage = await msg.channel.send(message);
   //   return deleteAfterDelay(msg, sentMessage);
   // }
+
+  if (subCommand === 'stats') {
+    const message = await colourStats(serverId);
+    return msg.channel.send(message);
+  }
 
   if (subCommand === 'pin' && isMod) {
     const channel = msg.channel;
