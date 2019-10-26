@@ -4,6 +4,7 @@ import { help } from './help';
 import { ping } from './ping';
 import { list } from './list';
 import { set } from './set';
+import { birthday } from './birthday';
 import { update } from './update';
 import { channel } from './channel';
 import { mentions } from './mentions';
@@ -23,19 +24,20 @@ export const COMMANDS: { [code: string]: Command } = {
   // ping,
   // list,
   set,
+  birthday,
   update,
+  notify,
+  prompt,
   channel,
   // mentions,
   role,
-  notify,
   user,
   colour,
   mod,
   unmod,
   echo,
   logging,
-  shortcut,
-  prompt
+  shortcut
 };
 
 export const findCommand = (name: string) => {
