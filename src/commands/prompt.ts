@@ -11,19 +11,18 @@ const promptCommand: CommandFn = async (params, msg) => {
   const channel = msg.channel;
 
   if (params.length === 0) {
-    const serverPrompts = await DB.getArrayAtPath(`prompts/${serverId}`);
-
-    if (!serverPrompts.length) {
+    const serverPrompts = await DB.getPath(`prompts/${serverId}`);
+    if (!serverPrompts || !Object.keys(serverPrompts).length) {
       return channel.send("There aren't any prompts saved at the moment. 😔");
     }
 
-    const chosenIndex = Math.floor(Math.random() * serverPrompts.length);
-    const selectedPrompt = serverPrompts[chosenIndex];
+    const keys = Object.keys(serverPrompts);
 
-    const updatedPromptList = serverPrompts.filter(
-      prompt => prompt !== selectedPrompt
-    );
-    await DB.setPath(`prompts/${serverId}`, updatedPromptList);
+    const chosenIndex = random(keys.length);
+    const selectedKey = keys[chosenIndex];
+    const selectedPrompt = serverPrompts[selectedKey];
+
+    await DB.deletePath(`prompts/${serverId}/${selectedKey}`);
 
     return channel.send(`You should draw... ${selectedPrompt}.`);
   }
