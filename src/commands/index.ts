@@ -15,6 +15,7 @@ import { colour } from './colour';
 import { mod } from './mod';
 import { unmod } from './unmod';
 import { echo } from './echo';
+import { breadify } from './breadify';
 import { logging } from './logging';
 import { shortcut } from './shortcut';
 import { prompt } from './prompt';
@@ -36,6 +37,7 @@ export const COMMANDS: { [code: string]: Command } = {
   mod,
   unmod,
   echo,
+  breadify,
   logging,
   shortcut
 };
