@@ -20,7 +20,7 @@ export const runCommand = async (msg: Message) => {
     .replace(PREFIX, '')
     .split(' ')
     .filter(word => !!word.length);
-  const code = request[0];
+  const code = request[0].toLowerCase();
   const params = request.slice(1);
 
   const command = findCommand(code);
