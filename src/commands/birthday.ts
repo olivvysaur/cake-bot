@@ -1,8 +1,8 @@
 import moment from 'moment';
 
 import { Command, CommandFn } from '../interfaces';
-import { getBirthdays } from '../database';
-import { getUsername } from '../users';
+import { getBirthdays, DB } from '../database';
+import { getUsername, findUser } from '../users';
 import { formatDate } from '../dates';
 
 const showNextBirthday: CommandFn = async (params, msg) => {
@@ -57,8 +57,39 @@ const showNextBirthday: CommandFn = async (params, msg) => {
   msg.channel.send(message);
 };
 
+const showUserBirthday: CommandFn = async (params, msg) => {
+  const serverId = msg.guild.id;
+  const userQuery = params.join(' ');
+
+  const user = findUser(userQuery, serverId);
+  if (!user) {
+    return msg.channel.send(`⚠️ I couldn't find a user named ${userQuery}.`);
+  }
+
+  const birthdayData = await DB.getPath(`birthdays/${serverId}/${user.id}`);
+  if (!birthdayData) {
+    return msg.channel.send(
+      `⚠️ I don't know when ${user.displayName}'s birthday is.`
+    );
+  }
+
+  const { month, day } = birthdayData;
+  const date = moment()
+    .month(month)
+    .date(day);
+  const formattedDate = formatDate(date);
+
+  return msg.channel.send(
+    `${user.displayName}'s birthday is on ${formattedDate}.`
+  );
+};
+
+const runBirthdayCommand: CommandFn = (params, msg) => {
+  params.length ? showUserBirthday(params, msg) : showNextBirthday(params, msg);
+};
+
 export const birthday: Command = {
   description: 'Shows the next upcoming birthday in the server.',
   params: [],
-  fn: showNextBirthday
+  fn: runBirthdayCommand
 };
