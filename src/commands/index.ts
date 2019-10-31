@@ -19,6 +19,7 @@ import { breadify } from './breadify';
 import { logging } from './logging';
 import { shortcut } from './shortcut';
 import { prompt } from './prompt';
+import { hug } from './hug';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -29,6 +30,7 @@ export const COMMANDS: { [code: string]: Command } = {
   update,
   notify,
   prompt,
+  hug,
   channel,
   // mentions,
   role,
