@@ -34,7 +34,7 @@ const drawProgressBar = (percentage: number) => {
   return bar;
 };
 
-const EMOJI_REGEX = /<:\w+:\d+>/g;
+const EMOJI_REGEX = /<a?:\w+:\d+>/g;
 
 const calculateEmojiStats: CommandFn = async (params, msg) => {
   const channels = msg.guild.channels
