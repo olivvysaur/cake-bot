@@ -55,9 +55,11 @@ const calculateEmojiStats: CommandFn = async (params, msg) => {
   );
   const resultMessage = await msg.channel.send(embed);
 
-  const messagesByChannel = await Promise.all(
+  let numMessages = 0;
+  const emojiCounts: { [name: string]: number } = {};
+
+  await Promise.all(
     channels.map(async channel => {
-      let channelMessages: Message[] = [];
       let fetchedMessages;
       let earliestMessage;
       do {
@@ -67,43 +69,26 @@ const calculateEmojiStats: CommandFn = async (params, msg) => {
         if (!fetchedMessages || !fetchedMessages.size) {
           break;
         }
-        channelMessages = channelMessages.concat(fetchedMessages.array());
+
+        fetchedMessages
+          .filter(message => !message.author.bot)
+          .forEach(message => {
+            numMessages += 1;
+            let match;
+            do {
+              match = EMOJI_REGEX.exec(message.content);
+              if (match) {
+                const emoji = match[0];
+                const existingCount = emojiCounts[emoji] || 0;
+                emojiCounts[emoji] = existingCount + 1;
+              }
+            } while (match);
+          });
+
         earliestMessage = fetchedMessages.last().id;
       } while (fetchedMessages && fetchedMessages.size);
-
-      return channelMessages;
     })
   );
-
-  const messages = messagesByChannel
-    .reduce<Message[]>(
-      (allMessages, channelMessages) => allMessages.concat(channelMessages),
-      []
-    )
-    .filter(message => !message.author.bot);
-
-  const numMessages = messages.length;
-  if (numMessages === 0) {
-    return;
-  }
-
-  embed.fields![0].name = 'Processing messages...';
-  embed.fields![0].value = `${pluralise(numMessages, 'message')} total`;
-  (resultMessage as Message).edit(embed);
-
-  const emojiCounts: { [name: string]: number } = {};
-
-  messages.forEach(message => {
-    let match;
-    do {
-      match = EMOJI_REGEX.exec(message.content);
-      if (match) {
-        const emoji = match[0];
-        const existingCount = emojiCounts[emoji] || 0;
-        emojiCounts[emoji] = existingCount + 1;
-      }
-    } while (match);
-  });
 
   const serverEmojis = msg.guild.emojis;
   const serverEmojiCounts = serverEmojis.map(emoji => ({
