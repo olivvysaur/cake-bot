@@ -122,6 +122,9 @@ const calculateEmojiStats: CommandFn = async (params, msg) => {
     )}`
   };
   (resultMessage as Message).edit(resultsEmbed);
+
+  const requester = msg.author;
+  msg.channel.send(`${requester}, the emoji stats are ready!`);
 };
 
 export const emoji: Command = {
