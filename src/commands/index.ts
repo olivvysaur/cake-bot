@@ -18,6 +18,7 @@ import { echo } from './echo';
 import { breadify } from './breadify';
 import { logging } from './logging';
 import { shortcut } from './shortcut';
+import { emoji } from './emoji';
 import { prompt } from './prompt';
 import { hug } from './hug';
 
@@ -41,7 +42,8 @@ export const COMMANDS: { [code: string]: Command } = {
   echo,
   breadify,
   logging,
-  shortcut
+  shortcut,
+  emoji
 };
 
 export const findCommand = (name: string) => {
