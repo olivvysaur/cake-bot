@@ -112,4 +112,8 @@ client.on('message', async msg => {
   runCommand(msg);
 });
 
+client.on('messageReactionAdd', async (reaction, user) => {
+  checkNotifications(user.id);
+});
+
 client.login(process.env.DISCORD_BOT_TOKEN);
