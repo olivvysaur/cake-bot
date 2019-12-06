@@ -27,6 +27,20 @@ const promptCommand: CommandFn = async (params, msg) => {
     return channel.send(`You should draw... ${selectedPrompt}.`);
   }
 
+  if (params.length === 1 && params[0] === 'count') {
+    const serverPrompts = await DB.getPath(`prompts/${serverId}`);
+    if (!serverPrompts || !Object.keys(serverPrompts).length) {
+      return channel.send("There aren't any prompts saved at the moment. 😔");
+    }
+
+    const count = Object.keys(serverPrompts).length;
+    if (count === 1) {
+      return channel.send('There is currently 1 prompt saved.');
+    } else {
+      return channel.send(`There are currently ${count} prompts saved.`);
+    }
+  }
+
   const promptToAdd = params.join(' ');
   await DB.pushAtPath(`prompts/${serverId}`, promptToAdd);
 
