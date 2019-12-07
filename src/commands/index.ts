@@ -11,6 +11,7 @@ import { mentions } from './mentions';
 import { role } from './role';
 import { notify } from './notify';
 import { user } from './user';
+import { users } from './users';
 import { colour } from './colour';
 import { mod } from './mod';
 import { unmod } from './unmod';
@@ -36,6 +37,7 @@ export const COMMANDS: { [code: string]: Command } = {
   // mentions,
   role,
   user,
+  users,
   colour,
   mod,
   unmod,
