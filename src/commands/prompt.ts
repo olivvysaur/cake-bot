@@ -7,7 +7,8 @@ import { pluralise } from '../strings';
 const random = (max: number) => Math.floor(Math.random() * max);
 
 const promptCommand: CommandFn = async (params, msg) => {
-  const serverId = msg.guild.id;
+  const server = msg.guild;
+  const serverId = server.id;
   const channel = msg.channel;
 
   if (params.length === 0) {
@@ -24,7 +25,17 @@ const promptCommand: CommandFn = async (params, msg) => {
 
     await DB.deletePath(`prompts/${serverId}/${selectedKey}`);
 
-    return channel.send(`You should draw... ${selectedPrompt}.`);
+    if (typeof selectedPrompt === 'string') {
+      return channel.send(`You should draw... ${selectedPrompt}.`);
+    }
+
+    const { prompt, user } = selectedPrompt;
+    const promptAuthor = await server.fetchMember(user);
+    const authorDisplayName = promptAuthor.displayName;
+
+    return channel.send(
+      `You should draw... ${prompt}.\n(Suggested by ${authorDisplayName})`
+    );
   }
 
   if (params.length === 1 && params[0].toLowerCase() === 'count') {
@@ -42,7 +53,11 @@ const promptCommand: CommandFn = async (params, msg) => {
   }
 
   const promptToAdd = params.join(' ');
-  await DB.pushAtPath(`prompts/${serverId}`, promptToAdd);
+  const senderId = msg.author.id;
+  await DB.pushAtPath(`prompts/${serverId}`, {
+    prompt: promptToAdd,
+    user: senderId
+  });
 
   const sentMessage = await channel.send(`✅ Got it!`);
   deleteAfterDelay(msg, sentMessage);
