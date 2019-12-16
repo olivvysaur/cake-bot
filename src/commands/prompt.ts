@@ -30,12 +30,15 @@ const promptCommand: CommandFn = async (params, msg) => {
     }
 
     const { prompt, user } = selectedPrompt;
-    const promptAuthor = await server.fetchMember(user);
-    const authorDisplayName = promptAuthor.displayName;
-
-    return channel.send(
-      `You should draw... ${prompt}.\n(Suggested by ${authorDisplayName})`
-    );
+    try {
+      const promptAuthor = await server.fetchMember(user);
+      const authorDisplayName = promptAuthor.displayName;
+      return channel.send(
+        `You should draw... ${prompt}.\n(suggested by ${authorDisplayName})`
+      );
+    } catch (e) {
+      return channel.send(`You should draw... ${prompt}.`);
+    }
   }
 
   if (params.length === 1 && params[0].toLowerCase() === 'count') {
