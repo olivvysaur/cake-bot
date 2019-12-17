@@ -1,10 +1,13 @@
+import { Message, CollectorFilter } from 'discord.js';
+
 import { Command, CommandFn } from '../interfaces';
 import { DB } from '../database';
 import { PREFIX } from '../constants';
 import { deleteAfterDelay } from '../messages';
-import { pluralise } from '../strings';
 
 const random = (max: number) => Math.floor(Math.random() * max);
+
+const TEN_MINUTES = 1000 * 60 * 10;
 
 const promptCommand: CommandFn = async (params, msg) => {
   const server = msg.guild;
@@ -25,20 +28,47 @@ const promptCommand: CommandFn = async (params, msg) => {
 
     await DB.deletePath(`prompts/${serverId}/${selectedKey}`);
 
+    let reply = '';
+
     if (typeof selectedPrompt === 'string') {
-      return channel.send(`You should draw... ${selectedPrompt}.`);
+      reply = `You should draw... ${selectedPrompt}.`;
+    } else {
+      const { prompt, user } = selectedPrompt;
+      try {
+        const promptAuthor = await server.fetchMember(user);
+        const authorDisplayName = promptAuthor.displayName;
+        reply = `You should draw... ${prompt}.\n(suggested by ${authorDisplayName})`;
+      } catch (e) {
+        reply = `You should draw... ${prompt}.`;
+      }
     }
 
-    const { prompt, user } = selectedPrompt;
-    try {
-      const promptAuthor = await server.fetchMember(user);
-      const authorDisplayName = promptAuthor.displayName;
-      return channel.send(
-        `You should draw... ${prompt}.\n(suggested by ${authorDisplayName})`
-      );
-    } catch (e) {
-      return channel.send(`You should draw... ${prompt}.`);
+    const requesterId = msg.author.id;
+
+    const sentMessage = (await msg.channel.send(reply)) as Message;
+    await sentMessage.react('✏️');
+    await sentMessage.react('♻️');
+
+    const filter: CollectorFilter = (reaction, user) =>
+      (reaction.emoji.name === '✏️' || reaction.emoji.name === '♻️') &&
+      user.id === requesterId;
+
+    const reactions = await sentMessage.awaitReactions(filter, {
+      time: TEN_MINUTES,
+      max: 1
+    });
+    sentMessage.clearReactions();
+    if (!!reactions && !!reactions.size) {
+      if (reactions.first().emoji.name === '♻️') {
+        await DB.pushAtPath(`prompts/${serverId}`, selectedPrompt);
+
+        const newMessageContent = `Prompt re-added to the suggestion pile.`;
+        await sentMessage.edit(newMessageContent);
+
+        deleteAfterDelay(sentMessage, msg);
+      }
     }
+    return;
   }
 
   if (params.length === 1 && params[0].toLowerCase() === 'count') {
