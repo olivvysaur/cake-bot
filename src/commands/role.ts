@@ -2,9 +2,7 @@ import { Message, RichEmbed } from 'discord.js';
 import Color from 'color';
 
 import { Command, CommandFn } from '../interfaces';
-
-const DISCORD_BG_COLOUR = Color('#36393f');
-const CONTRAST_THRESHOLD = 4.5;
+import { DISCORD_BG_COLOUR, CONTRAST_THRESHOLD } from '../constants';
 
 const hexToRgb = (hex: string) => {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);

@@ -3,9 +3,11 @@ import {
   RichEmbed,
   Attachment,
   TextChannel,
-  Message
+  Message,
+  Util
 } from 'discord.js';
 import { createCanvas } from 'canvas';
+import Color from 'color';
 
 import { Command, CommandFn } from '../interfaces';
 import { client } from '..';
@@ -14,6 +16,7 @@ import { deleteAfterDelay } from '../messages';
 import { Log } from '../logging';
 import { notUndefined } from '../notUndefined';
 import { pluralise } from '../strings';
+import { DISCORD_BG_COLOUR, CONTRAST_THRESHOLD } from '../constants';
 
 interface Colour {
   name: string;
@@ -402,6 +405,45 @@ const colourStats = async (serverId: string) => {
   return embed;
 };
 
+const colourAccessibility = async (serverId: string, channel: TextChannel) => {
+  const server = client.guilds.get(serverId);
+  if (!server) {
+    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+  }
+
+  const serverColours: Colour[] = await DB.getArrayAtPath(
+    `colours/${serverId}`
+  );
+  if (!serverColours.length) {
+    return '⚠️ No colours have been set up.';
+  }
+
+  const list = serverColours
+    .map(colourData => {
+      const { name, hex } = colourData;
+      const colour = Color(`#${hex}`);
+
+      const contrast = colour.contrast(DISCORD_BG_COLOUR);
+      const accessibilityIndicator =
+        contrast >= CONTRAST_THRESHOLD ? '✅' : '⚠️';
+
+      return `${name}\n${accessibilityIndicator} ${contrast.toFixed(2)}`;
+    })
+    .join('\n\n');
+
+  const chunks = Util.splitMessage(list, { maxLength: 2000 });
+  const chunksArray = Array.isArray(chunks) ? chunks : [chunks];
+  chunksArray.forEach((chunk, index) => {
+    const embed = new RichEmbed();
+    embed.title =
+      index === 0
+        ? `Colour accessibility audit`
+        : 'Colour accessibility audit (continued)';
+    embed.description = chunk;
+    channel.send(embed);
+  });
+};
+
 const getHelp = (showModCommands = false) => {
   const embed = new RichEmbed();
   embed.addField(
@@ -413,6 +455,10 @@ const getHelp = (showModCommands = false) => {
     'Shows stats about colours in the server.'
   );
   // embed.addField('!cb colour list', 'Displays all available colours.');
+  embed.addField(
+    '!cb colour accessibility',
+    'Shows the colour contrast for each colour role in the server.'
+  );
   if (showModCommands) {
     embed.description = 'Commands marked with Ⓜ require mod privilege.';
 
@@ -479,6 +525,11 @@ const colourCommand: CommandFn = async (params, msg) => {
   if (subCommand === 'stats') {
     const message = await colourStats(serverId);
     return msg.channel.send(message);
+  }
+
+  if (subCommand === 'accessibility') {
+    await colourAccessibility(serverId, msg.channel as TextChannel);
+    return;
   }
 
   if (subCommand === 'pin' && isMod) {
