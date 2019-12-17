@@ -1,5 +1,10 @@
+import { Message, RichEmbed } from 'discord.js';
+import Color from 'color';
+
 import { Command, CommandFn } from '../interfaces';
-import { Role, Message, RichEmbed } from 'discord.js';
+
+const DISCORD_BG_COLOUR = Color('#36393f');
+const CONTRAST_THRESHOLD = 4.5;
 
 const hexToRgb = (hex: string) => {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -33,12 +38,21 @@ const roleInfo: CommandFn = async (params, msg) => {
   }
 
   const { name, color, hexColor, members, createdAt } = role;
+
+  const contrast = Color(color).contrast(DISCORD_BG_COLOUR);
+  const accessibilityIndicator = contrast >= CONTRAST_THRESHOLD ? '✅' : '⚠️';
+
   const embed = new RichEmbed();
   embed.title = `Info about role ${name}`;
   embed.color = color;
   embed.addField('Hex', hexColor, true);
   embed.addField('RGB', hexToRgb(hexColor), true);
   embed.addField('People with this role', members.size, true);
+  embed.addField(
+    'Colour contrast',
+    `${accessibilityIndicator} ${contrast.toFixed(2)}`,
+    true
+  );
   embed.footer = { text: 'Role created:' };
   embed.timestamp = createdAt;
   msg.channel.send(embed);
