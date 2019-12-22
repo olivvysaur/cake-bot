@@ -28,19 +28,17 @@ const promptCommand: CommandFn = async (params, msg) => {
 
     await DB.deletePath(`prompts/${serverId}/${selectedKey}`);
 
-    let reply = '';
+    let reply = new RichEmbed();
 
     if (typeof selectedPrompt === 'string') {
-      reply = `You should draw... ${selectedPrompt}.`;
+      reply.description = `You should draw... ${selectedPrompt}.`;
     } else {
       const { prompt, user } = selectedPrompt;
+      reply.description = `You should draw... ${prompt}.`;
       try {
         const promptAuthor = await server.fetchMember(user);
-        const authorDisplayName = promptAuthor.displayName;
-        reply = `You should draw... ${prompt}.\n(suggested by ${authorDisplayName})`;
-      } catch (e) {
-        reply = `You should draw... ${prompt}.`;
-      }
+        reply.addField('Suggested by', promptAuthor, true);
+      } catch (e) {}
     }
 
     const requesterId = msg.author.id;
@@ -61,11 +59,8 @@ const promptCommand: CommandFn = async (params, msg) => {
     if (!!reactions && !!reactions.size) {
       if (reactions.first().emoji.name === '♻️') {
         await DB.pushAtPath(`prompts/${serverId}`, selectedPrompt);
-
-        const newMessageContent = `Prompt re-added to the suggestion pile.`;
-        await sentMessage.edit(newMessageContent);
-
-        deleteAfterDelay(sentMessage, msg);
+        await sentMessage.edit(`Prompt re-added to the suggestion pile.`);
+        // deleteAfterDelay(msg, sentMessage);
       }
     }
     return;
