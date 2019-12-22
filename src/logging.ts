@@ -6,7 +6,8 @@ import {
   RichEmbed,
   Attachment,
   FileOptions,
-  TextChannel
+  TextChannel,
+  User
 } from 'discord.js';
 
 const CACHE_LENGTH = 86400 * 1000;
@@ -40,9 +41,11 @@ const getLogChannel = async (serverId: string) => {
 
 export interface LogOptions {
   user?: GuildMember;
+  userId?: string;
   color?: string;
   attachment?: string | Attachment | FileOptions;
   iconUrl?: string;
+  author?: User;
 }
 
 export class Log {
@@ -72,6 +75,13 @@ export class Log {
         icon_url: options.user.user.avatarURL
       };
       embed.footer = { text: `User ID: ${options.user.user.id}` };
+    }
+
+    if (!!options.author) {
+      embed.author = {
+        name: options.author.tag,
+        icon_url: options.author.displayAvatarURL
+      };
     }
 
     if (!!options.attachment) {

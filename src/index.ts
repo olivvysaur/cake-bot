@@ -1,4 +1,4 @@
-import Discord, { Message } from 'discord.js';
+import Discord, { Message, User } from 'discord.js';
 import { config as loadEnv } from 'dotenv';
 import schedule from 'node-schedule';
 
@@ -77,6 +77,24 @@ client.on('guildDelete', async server => {
 client.on('guildMemberRemove', async member => {
   const serverId = member.guild.id;
   const userId = member.id;
+
+  const auditLog = await member.guild.fetchAuditLogs({
+    type: 'MEMBER_KICK',
+    limit: 1
+  });
+  const entry = auditLog.entries.first();
+  if (entry) {
+    const targetUser = entry.target as User;
+    if (targetUser.id === userId) {
+      const executor = entry.executor;
+      Log.red(
+        'Member kicked',
+        `${targetUser} was kicked by ${executor}.`,
+        serverId,
+        { author: targetUser }
+      );
+    }
+  }
 
   const userBirthday = await DB.getPath(`birthdays/${serverId}/${userId}`);
   if (!userBirthday) {
