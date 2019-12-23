@@ -77,35 +77,6 @@ const promptCommand: CommandFn = async (params, msg) => {
     }
   }
 
-  if (params.length === 1 && params[0].toLowerCase() === '$analysis') {
-    const serverPrompts = await DB.getPath(`prompts/${serverId}`);
-    if (!serverPrompts || !Object.keys(serverPrompts).length) {
-      return channel.send("There aren't any prompts saved at the moment. 😔");
-    }
-
-    const count = Object.keys(serverPrompts).length;
-
-    const untaggedCount = Object.values(serverPrompts).filter(
-      prompt => typeof prompt === 'string'
-    ).length;
-    const taggedCount = Object.values(serverPrompts).filter(
-      prompt => typeof prompt !== 'string'
-    ).length;
-
-    const completionRatio = ((taggedCount / count) * 100)
-      .toFixed(2)
-      .replace('.00', '');
-
-    const embed = new RichEmbed();
-    embed.title = 'Prompt analysis';
-    embed.addField('Total prompts', count, true);
-    embed.addField('Tagged prompts', taggedCount, true);
-    embed.addField('Untagged prompts', untaggedCount, true);
-    embed.addField('Completion', `${completionRatio}%`, true);
-
-    return channel.send(embed);
-  }
-
   const promptToAdd = params.join(' ');
   const senderId = msg.author.id;
   await DB.pushAtPath(`prompts/${serverId}`, {
