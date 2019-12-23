@@ -35,10 +35,7 @@ const promptCommand: CommandFn = async (params, msg) => {
     } else {
       const { prompt, user } = selectedPrompt;
       reply.description = `You should draw... ${prompt}.`;
-      try {
-        const promptAuthor = await server.fetchMember(user);
-        reply.addField('Suggested by', promptAuthor, true);
-      } catch (e) {}
+      reply.addField(`Suggested by`, `<@${user}>`, true);
     }
 
     const requesterId = msg.author.id;
