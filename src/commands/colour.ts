@@ -16,7 +16,7 @@ import { deleteAfterDelay } from '../messages';
 import { Log } from '../logging';
 import { notUndefined } from '../notUndefined';
 import { pluralise } from '../strings';
-import { DISCORD_BG_COLOUR, CONTRAST_THRESHOLD } from '../constants';
+import { DISCORD_BG_COLOUR, CONTRAST_THRESHOLD, PREFIX } from '../constants';
 
 interface Colour {
   name: string;
@@ -379,8 +379,12 @@ const reorderColours = async (serverId: string, channel: TextChannel) => {
   });
 
   await DB.setPath(`colours/${serverId}`, sortedColours);
-  const newList = await listColours(serverId);
-  channel.send(newList);
+
+  const embed = new RichEmbed();
+  embed.title = 'Colours reordered';
+  embed.description = `Colours in the server have been reordered by hue. Remember to run '${PREFIX}colour list' or '${PREFIX}colour pin' to display the new list.`;
+  embed.setColor('#408137');
+  channel.send(embed);
 };
 
 const colourStats = async (serverId: string) => {
@@ -582,7 +586,6 @@ const colourCommand: CommandFn = async (params, msg) => {
     if (channel instanceof TextChannel) {
       await reorderColours(serverId, channel);
     }
-    return deleteAfterDelay(msg);
   }
 
   if (subCommand === 'add' && isMod) {
