@@ -350,6 +350,39 @@ const importColour = async (
   return embed;
 };
 
+const reorderColours = async (serverId: string, channel: TextChannel) => {
+  const server = client.guilds.get(serverId);
+  if (!server) {
+    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+  }
+
+  const serverColours: Colour[] = await DB.getArrayAtPath(
+    `colours/${serverId}`
+  );
+  if (!serverColours.length) {
+    return '⚠️ No colours have been set up.';
+  }
+
+  const sortedColours = serverColours.sort((a, b) => {
+    const colourA = Color(`#${a.hex}`);
+    const colourB = Color(`#${b.hex}`);
+
+    if (colourA.saturationv() < 5 && colourB.saturationv() < 5) {
+      return colourA.value() < colourB.value() ? -1 : 1;
+    } else if (colourA.saturationv() < 5) {
+      return -1;
+    } else if (colourB.saturationv() < 5) {
+      return 1;
+    }
+
+    return colourA.hue() < colourB.hue() ? -1 : 1;
+  });
+
+  await DB.setPath(`colours/${serverId}`, sortedColours);
+  const newList = await listColours(serverId);
+  channel.send(newList);
+};
+
 const colourStats = async (serverId: string) => {
   const server = client.guilds.get(serverId);
   if (!server) {
@@ -454,7 +487,7 @@ const getHelp = (showModCommands = false) => {
     '!cb colour stats',
     'Shows stats about colours in the server.'
   );
-  // embed.addField('!cb colour list', 'Displays all available colours.');
+  embed.addField('!cb colour list', 'Displays all available colours.');
   embed.addField(
     '!cb colour accessibility',
     'Shows the colour contrast for each colour role in the server.'
@@ -481,6 +514,10 @@ const getHelp = (showModCommands = false) => {
     embed.addField(
       '!cb colour pin Ⓜ',
       'Pins the colour list to the current channel.'
+    );
+    embed.addField(
+      '!cb colour reorder Ⓜ',
+      `Reorders the server's colours by hue.`
     );
   }
   return embed;
@@ -516,11 +553,11 @@ const colourCommand: CommandFn = async (params, msg) => {
     return msg.channel.send(message);
   }
 
-  // if (subCommand === 'list') {
-  //   const message = await listColours(serverId);
-  //   const sentMessage = await msg.channel.send(message);
-  //   return deleteAfterDelay(msg, sentMessage);
-  // }
+  if (subCommand === 'list') {
+    const message = await listColours(serverId);
+    const sentMessage = await msg.channel.send(message);
+    return deleteAfterDelay(msg);
+  }
 
   if (subCommand === 'stats') {
     const message = await colourStats(serverId);
@@ -536,6 +573,14 @@ const colourCommand: CommandFn = async (params, msg) => {
     const channel = msg.channel;
     if (channel instanceof TextChannel) {
       await pinColourList(serverId, channel);
+    }
+    return deleteAfterDelay(msg);
+  }
+
+  if (subCommand === 'reorder' && isMod) {
+    const channel = msg.channel;
+    if (channel instanceof TextChannel) {
+      await reorderColours(serverId, channel);
     }
     return deleteAfterDelay(msg);
   }
