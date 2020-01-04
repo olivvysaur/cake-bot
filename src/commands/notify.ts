@@ -1,10 +1,13 @@
 import { Command, CommandFn } from '../interfaces';
-import { Message } from 'discord.js';
+import { Message, MessageReaction } from 'discord.js';
 import {
   addOnlineNotification,
-  getOnlineNotificationBetweenUsers
+  getOnlineNotificationBetweenUsers,
+  DB
 } from '../database';
 import { findUser, getUsername } from '../users';
+import { PREFIX } from '../constants';
+import { client } from '..';
 
 const setupNotification: CommandFn = async (params, msg) => {
   if (params.length < 1) {
@@ -59,13 +62,50 @@ const setupNotification: CommandFn = async (params, msg) => {
   }
 
   await addOnlineNotification(receiverId, senderId, link, senderName);
-  const sentMessage = await msg.channel.send(
-    `✅ Got it! Next time ${foundUser.displayName} is active I'll send a notification.`
+
+  const emojiServerId = process.env.DISCORD_SERVER_ID;
+  const emoji = client.emojis.find(
+    emoji => emoji.guild.id === emojiServerId && emoji.name === 'CancelPing'
   );
-  setTimeout(() => {
-    (sentMessage as Message).delete();
-  }, 5000);
+  if (emoji) {
+    msg.react(emoji);
+  } else {
+    const sentMessage = await msg.channel.send(
+      `✅ Got it! Next time ${foundUser.displayName} is active I'll send a notification.`
+    );
+    setTimeout(() => {
+      (sentMessage as Message).delete();
+    }, 5000);
+  }
   return;
+};
+
+export const cancelPing = async (reaction: MessageReaction, userId: string) => {
+  const { message } = reaction;
+  const {
+    author: { id: senderId },
+    url
+  } = message;
+
+  if (userId === senderId) {
+    const allNotifications = await DB.getPath('onlineNotifications');
+    Object.keys(allNotifications).forEach(receiver => {
+      const notificationsForReceiver = allNotifications[receiver];
+      const notificationFromSender = notificationsForReceiver[senderId];
+      if (!!notificationFromSender && notificationFromSender.url === url) {
+        DB.deletePath(`onlineNotifications/${receiver}/${senderId}`);
+      }
+    });
+    return;
+  }
+
+  const notification = await getOnlineNotificationBetweenUsers(
+    userId,
+    senderId
+  );
+  if (!!notification && notification.url === url) {
+    DB.deletePath(`onlineNotifications/${userId}/${senderId}`);
+  }
 };
 
 export const notify: Command = {

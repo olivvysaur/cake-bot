@@ -10,6 +10,7 @@ import { Log } from './logging';
 import { updateList } from './updateList';
 import { PREFIX } from './constants';
 import { checkShortcuts } from './checkShortcuts';
+import { cancelPing } from './commands/notify';
 
 loadEnv();
 
@@ -131,6 +132,10 @@ client.on('message', async msg => {
 });
 
 client.on('messageReactionAdd', async (reaction, user) => {
+  if (reaction.emoji.name === 'CancelPing') {
+    await cancelPing(reaction, user.id);
+  }
+
   checkNotifications(user.id);
 });
 
