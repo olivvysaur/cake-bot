@@ -1,4 +1,6 @@
 import Medusa from 'medusajs';
+import { TextChannel } from 'discord.js';
+
 import { getOnlineNotifications, deleteOnlineNotifications } from './database';
 import { client } from '.';
 
@@ -31,6 +33,19 @@ export const checkNotifications = async (userId: string) => {
   if (!notifications || !senders.length) {
     return;
   }
+
+  senders.forEach(async senderId => {
+    const url: string = notifications[senderId].url;
+
+    const segments = url.split('/');
+    const messageId = segments[segments.length - 1];
+    const channelId = segments[segments.length - 2];
+
+    const channel = client.channels.get(channelId) as TextChannel;
+    const message = await channel.fetchMessage(messageId);
+
+    message.clearReactions();
+  });
 
   const count = senders.length;
   const introText = `${count} ${
