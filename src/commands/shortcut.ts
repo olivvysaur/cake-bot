@@ -5,6 +5,7 @@ import { Command, CommandFn, Shortcut } from '../interfaces';
 import { PREFIX } from '../constants';
 import { DB } from '../database';
 import { getShortcuts } from '../checkShortcuts';
+import { emoji } from '../emoji';
 
 const createShortcut: CommandFn = async (params, msg) => {
   const serverId = msg.guild.id;
@@ -26,7 +27,7 @@ const createShortcut: CommandFn = async (params, msg) => {
     !collectedTrigger.size ||
     collectedTrigger.first().content.toLowerCase() === 'cancel'
   ) {
-    return channel.send('❌ Shortcut creation cancelled.');
+    return channel.send(`${emoji.error} Shortcut creation cancelled.`);
   }
 
   const trigger = collectedTrigger.first().content.toLowerCase();
@@ -43,7 +44,7 @@ const createShortcut: CommandFn = async (params, msg) => {
     !collectedCommand.size ||
     collectedCommand.first().content.toLowerCase() === 'cancel'
   ) {
-    return channel.send('❌ Shortcut creation cancelled.');
+    return channel.send(`${emoji.error} Shortcut creation cancelled.`);
   }
 
   const command = collectedCommand.first().content;
@@ -60,7 +61,7 @@ const createShortcut: CommandFn = async (params, msg) => {
   await Medusa.put(`shortcuts.${serverId}`, shortcuts, 86400 * 1000);
 
   await channel.send(
-    `✅ Got it! When someone uses "${PREFIX}${trigger}", I'll run "${PREFIX}${command}".`
+    `${emoji.success} Got it! When someone uses "${PREFIX}${trigger}", I'll run "${PREFIX}${command}".`
   );
 };
 

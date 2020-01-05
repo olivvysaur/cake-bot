@@ -3,6 +3,7 @@ import { RichEmbed } from 'discord.js';
 import { Command, CommandFn } from '../interfaces';
 import { findUser } from '../users';
 import { timeSince } from '../dates';
+import { emoji } from '../emoji';
 
 const getUserInfo: CommandFn = async (params, msg) => {
   const serverId = msg.guild.id;
@@ -11,7 +12,7 @@ const getUserInfo: CommandFn = async (params, msg) => {
   const user = findUser(query, serverId);
 
   if (!user) {
-    msg.channel.send(`⚠️ I couldn't find a user named "${query}".`);
+    msg.channel.send(`${emoji.error} I couldn't find a user named "${query}".`);
     return;
   }
 

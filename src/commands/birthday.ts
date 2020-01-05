@@ -4,6 +4,7 @@ import { Command, CommandFn } from '../interfaces';
 import { getBirthdays, DB } from '../database';
 import { getUsername, findUser } from '../users';
 import { formatDate } from '../dates';
+import { emoji } from '../emoji';
 
 const showNextBirthday: CommandFn = async (params, msg) => {
   const serverId = msg.guild.id;
@@ -29,7 +30,7 @@ const showNextBirthday: CommandFn = async (params, msg) => {
     }
 
     if (month === startMonth && day === startDay) {
-      return msg.channel.send('⚠️ No birthdays have been saved.');
+      return msg.channel.send(`${emoji.error} No birthdays have been saved.`);
     }
   }
 
@@ -63,13 +64,15 @@ const showUserBirthday: CommandFn = async (params, msg) => {
 
   const user = findUser(userQuery, serverId);
   if (!user) {
-    return msg.channel.send(`⚠️ I couldn't find a user named ${userQuery}.`);
+    return msg.channel.send(
+      `${emoji.error} I couldn't find a user named ${userQuery}.`
+    );
   }
 
   const birthdayData = await DB.getPath(`birthdays/${serverId}/${user.id}`);
   if (!birthdayData) {
     return msg.channel.send(
-      `⚠️ I don't know when ${user.displayName}'s birthday is.`
+      `${emoji.error} I don't know when ${user.displayName}'s birthday is.`
     );
   }
 

@@ -4,6 +4,7 @@ import { Command, CommandFn } from '../interfaces';
 import { client } from '../index';
 import { setServerChannel } from '../database';
 import { updateList } from '../updateList';
+import { emoji } from '../emoji';
 
 const setChannel: CommandFn = (params, msg) => {
   if (params.length < 1) {
@@ -17,7 +18,7 @@ const setChannel: CommandFn = (params, msg) => {
 
   const channel = client.channels.get(channelId) as Discord.TextChannel;
   if (!channel) {
-    return msg.channel.send("I couldn't find that channel.");
+    return msg.channel.send(`${emoji.error} I couldn't find that channel.`);
   }
 
   const server = msg.guild.id;

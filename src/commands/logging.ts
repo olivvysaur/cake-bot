@@ -6,6 +6,7 @@ import { DB } from '../database';
 import { client } from '..';
 import { deleteAfterDelay } from '../messages';
 import { Log } from '../logging';
+import { emoji } from '../emoji';
 
 const CHANNEL_REGEX = /<#(\d+)>/;
 
@@ -25,7 +26,7 @@ const setLogChannel: CommandFn = async (params, msg) => {
     await DB.deletePath(`/logging/${serverId}`);
     await Medusa.put(`logging.${serverId}`, null, 86400 * 1000);
     const sentMessage = await msg.channel.send(
-      '✅ Logging disabled for this server.'
+      `${emoji.success} Logging disabled for this server.`
     );
     deleteAfterDelay(msg, sentMessage);
   }
@@ -37,7 +38,7 @@ const setLogChannel: CommandFn = async (params, msg) => {
   const channel = client.channels.get(channelId || '') as TextChannel;
   if (!channel) {
     const sentMessage = await msg.channel.send(
-      "⚠️ I couldn't find that channel."
+      `${emoji.error} I couldn't find that channel.`
     );
     deleteAfterDelay(msg, sentMessage);
   }
@@ -50,7 +51,7 @@ const setLogChannel: CommandFn = async (params, msg) => {
     serverId
   );
   const sentMessage = await msg.channel.send(
-    `✅ Logging enabled in ${params[0]} for this server.`
+    `${emoji.success} Logging enabled in ${params[0]} for this server.`
   );
   deleteAfterDelay(msg, sentMessage);
 };

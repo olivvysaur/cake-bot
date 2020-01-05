@@ -4,6 +4,7 @@ import { Command, CommandFn } from '../interfaces';
 import { DB } from '../database';
 import { PREFIX } from '../constants';
 import { deleteAfterDelay } from '../messages';
+import { emoji } from '../emoji';
 
 const random = (max: number) => Math.floor(Math.random() * max);
 
@@ -84,7 +85,7 @@ const promptCommand: CommandFn = async (params, msg) => {
     user: senderId
   });
 
-  const sentMessage = await channel.send(`✅ Got it!`);
+  const sentMessage = await channel.send(`${emoji.success} Got it!`);
   deleteAfterDelay(msg, sentMessage);
 };
 

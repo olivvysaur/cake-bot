@@ -3,6 +3,7 @@ import { TextChannel } from 'discord.js';
 import { Command, CommandFn } from '../interfaces';
 import { deleteAfterDelay } from '../messages';
 import { client } from '..';
+import { emoji } from '../emoji';
 
 const CHANNEL_REGEX = /<#(\d+)>/;
 
@@ -18,7 +19,7 @@ const doEcho: CommandFn = async (params, msg) => {
   const channel = client.channels.get(channelId || '') as TextChannel;
   if (!!channelId && !channel) {
     const sentMessage = await msg.channel.send(
-      "⚠️ I couldn't find that channel."
+      `${emoji.error} I couldn't find that channel.`
     );
     deleteAfterDelay(msg, sentMessage);
   }

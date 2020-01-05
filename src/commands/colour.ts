@@ -17,6 +17,7 @@ import { Log } from '../logging';
 import { notUndefined } from '../notUndefined';
 import { pluralise } from '../strings';
 import { DISCORD_BG_COLOUR, CONTRAST_THRESHOLD, PREFIX } from '../constants';
+import { emoji } from '../emoji';
 
 interface Colour {
   name: string;
@@ -31,7 +32,7 @@ const setColour = async (
 ) => {
   const server = client.guilds.get(serverId);
   if (!server) {
-    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+    return `${emoji.error} Something went wrong.\n\`Invalid server id ${serverId}\``;
   }
 
   const serverColours: Colour[] = await DB.getArrayAtPath(
@@ -39,7 +40,7 @@ const setColour = async (
   );
 
   if (colour > serverColours.length) {
-    return `⚠️ No colour exists with number ${colour}.`;
+    return `${emoji.error} No colour exists with number ${colour}.`;
   }
 
   const serverColourRoles = serverColours.map(colour => colour.role);
@@ -77,14 +78,14 @@ const setColour = async (
 const listColours = async (serverId: string) => {
   const server = client.guilds.get(serverId);
   if (!server) {
-    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+    return `${emoji.error} Something went wrong.\n\`Invalid server id ${serverId}\``;
   }
 
   const serverColours: Colour[] = await DB.getArrayAtPath(
     `colours/${serverId}`
   );
   if (!serverColours.length) {
-    return '⚠️ No colours have been set up.';
+    return `${emoji.error} No colours have been set up.`;
   }
 
   const font = 'bold 48px sans-serif';
@@ -165,7 +166,7 @@ const createColour = async (
 ) => {
   const server = client.guilds.get(serverId);
   if (!server) {
-    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+    return `${emoji.error} Something went wrong.\n\`Invalid server id ${serverId}\``;
   }
 
   const serverColours: Colour[] = await DB.getArrayAtPath(
@@ -213,7 +214,7 @@ const renameColour = async (
 ) => {
   const server = client.guilds.get(serverId);
   if (!server) {
-    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+    return `${emoji.error} Something went wrong.\n\`Invalid server id ${serverId}\``;
   }
 
   const serverColours: { [key: string]: Colour } = await DB.getPath(
@@ -222,7 +223,7 @@ const renameColour = async (
   const keys = Object.keys(serverColours);
 
   if (colour > keys.length) {
-    return `⚠️ No colour exists with number ${colour}.`;
+    return `${emoji.error} No colour exists with number ${colour}.`;
   }
 
   const chosenKey = keys[colour - 1];
@@ -261,7 +262,7 @@ const deleteColour = async (
 ) => {
   const server = client.guilds.get(serverId);
   if (!server) {
-    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+    return `${emoji.error} Something went wrong.\n\`Invalid server id ${serverId}\``;
   }
 
   const serverColours: { [key: string]: Colour } = await DB.getPath(
@@ -270,7 +271,7 @@ const deleteColour = async (
   const keys = Object.keys(serverColours);
 
   if (colour > keys.length) {
-    return `⚠️ No colour exists with number ${colour}.`;
+    return `${emoji.error} No colour exists with number ${colour}.`;
   }
 
   const chosenKey = keys[colour - 1];
@@ -307,14 +308,14 @@ const importColour = async (
 ) => {
   const server = client.guilds.get(serverId);
   if (!server) {
-    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+    return `${emoji.error} Something went wrong.\n\`Invalid server id ${serverId}\``;
   }
 
   const matchedRole = server.roles.find(
     role => role.name.toLowerCase() === roleName.toLowerCase()
   );
   if (!matchedRole) {
-    return `⚠️ I couldn't find a role named ${roleName}.`;
+    return `${emoji.error} I couldn't find a role named ${roleName}.`;
   }
 
   const serverColours: Colour[] = await DB.getArrayAtPath(
@@ -323,7 +324,7 @@ const importColour = async (
   const colourCount = !!serverColours ? serverColours.length : 0;
 
   if (!!serverColours.find(colour => colour.role === matchedRole.id)) {
-    return `⚠️ I already know about ${matchedRole.name}.`;
+    return `${emoji.error} I already know about ${matchedRole.name}.`;
   }
 
   const { id, name, hexColor } = matchedRole;
@@ -353,14 +354,14 @@ const importColour = async (
 const reorderColours = async (serverId: string, channel: TextChannel) => {
   const server = client.guilds.get(serverId);
   if (!server) {
-    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+    return `${emoji.error} Something went wrong.\n\`Invalid server id ${serverId}\``;
   }
 
   const serverColours: Colour[] = await DB.getArrayAtPath(
     `colours/${serverId}`
   );
   if (!serverColours.length) {
-    return '⚠️ No colours have been set up.';
+    return `${emoji.error} No colours have been set up.`;
   }
 
   const sortedColours = serverColours.sort((a, b) => {
@@ -390,14 +391,14 @@ const reorderColours = async (serverId: string, channel: TextChannel) => {
 const colourStats = async (serverId: string) => {
   const server = client.guilds.get(serverId);
   if (!server) {
-    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+    return `${emoji.error} Something went wrong.\n\`Invalid server id ${serverId}\``;
   }
 
   const serverColours: Colour[] = await DB.getArrayAtPath(
     `colours/${serverId}`
   );
   if (!serverColours.length) {
-    return '⚠️ No colours have been set up.';
+    return `${emoji.error} No colours have been set up.`;
   }
 
   const ranking = serverColours
@@ -445,14 +446,14 @@ const colourStats = async (serverId: string) => {
 const colourAccessibility = async (serverId: string, channel: TextChannel) => {
   const server = client.guilds.get(serverId);
   if (!server) {
-    return `⚠️ Something went wrong.\n\`Invalid server id ${serverId}\``;
+    return `${emoji.error} Something went wrong.\n\`Invalid server id ${serverId}\``;
   }
 
   const serverColours: Colour[] = await DB.getArrayAtPath(
     `colours/${serverId}`
   );
   if (!serverColours.length) {
-    return '⚠️ No colours have been set up.';
+    return `${emoji.error} No colours have been set up.`;
   }
 
   const list = serverColours
@@ -630,7 +631,7 @@ const colourCommand: CommandFn = async (params, msg) => {
 export const colour: Command = {
   params: ['•••'],
   description:
-    'Manages colours, Iris style. Get more info using "colour help".',
+    'Manages roles for name colours. Get more info using "colour help".',
   fn: colourCommand,
   aliases: ['color']
 };

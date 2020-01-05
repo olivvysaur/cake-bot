@@ -1,6 +1,6 @@
 import { Command, CommandFn } from '../interfaces';
 import { GuildMember, RichEmbed } from 'discord.js';
-import { client } from '..';
+import { emoji } from '../emoji';
 import { DB } from '../database';
 
 const addMod: CommandFn = async (params, msg) => {
@@ -16,7 +16,9 @@ const addMod: CommandFn = async (params, msg) => {
     role => role.name.toLowerCase() === roleName.toLowerCase()
   );
   if (!matchedRole) {
-    return msg.channel.send(`⚠️ I couldn't find a role named ${roleName}.`);
+    return msg.channel.send(
+      `${emoji.error} I couldn't find a role named ${roleName}.`
+    );
   }
 
   const existingModRoles = await DB.getArrayAtPath(`modRoles/${serverId}`);
@@ -26,7 +28,7 @@ const addMod: CommandFn = async (params, msg) => {
 
   const embed = new RichEmbed();
   embed.title = 'Mod role added';
-  embed.description = `${matchedRole} is now a mod role.`;
+  embed.description = `${emoji.success} ${matchedRole} is now a mod role.`;
   msg.channel.send(embed);
 };
 

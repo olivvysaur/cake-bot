@@ -1,18 +1,19 @@
 import { Command, CommandFn } from '../interfaces';
 import { Message, MessageReaction } from 'discord.js';
+
 import {
   addOnlineNotification,
   getOnlineNotificationBetweenUsers,
   DB
 } from '../database';
-import { findUser, getUsername } from '../users';
-import { PREFIX } from '../constants';
+import { findUser } from '../users';
 import { client } from '..';
+import { emoji } from '../emoji';
 
 const setupNotification: CommandFn = async (params, msg) => {
   if (params.length < 1) {
     const sentMessage = await msg.channel.send(
-      '⚠️ I need to know who to notify.'
+      `${emoji.error} I need to know who to notify.`
     );
     setTimeout(() => {
       msg.delete();
@@ -32,7 +33,7 @@ const setupNotification: CommandFn = async (params, msg) => {
 
   if (!foundUser) {
     const sentMessage = await msg.channel.send(
-      `⚠️ I can't find a user named "${usernameQuery}".`
+      `${emoji.error} I can't find a user named "${usernameQuery}".`
     );
     setTimeout(() => {
       msg.delete();
@@ -52,7 +53,7 @@ const setupNotification: CommandFn = async (params, msg) => {
   );
   if (!!existingNotification) {
     const sentMessage = await msg.channel.send(
-      '⚠️ You already have a pending notification for that person.'
+      `${emoji.error} You already have a pending notification for that person.`
     );
     setTimeout(() => {
       msg.delete();
@@ -63,15 +64,12 @@ const setupNotification: CommandFn = async (params, msg) => {
 
   await addOnlineNotification(receiverId, senderId, link, senderName);
 
-  const emojiServerId = process.env.DISCORD_SERVER_ID;
-  const emoji = client.emojis.find(
-    emoji => emoji.guild.id === emojiServerId && emoji.name === 'CancelPing'
-  );
-  if (emoji) {
-    msg.react(emoji);
+  const cancelEmoji = emoji.CancelPing;
+  if (cancelEmoji) {
+    msg.react(cancelEmoji);
   } else {
     const sentMessage = await msg.channel.send(
-      `✅ Got it! Next time ${foundUser.displayName} is active I'll send a notification.`
+      `${emoji.success} Got it! Next time ${foundUser.displayName} is active I'll send a notification.`
     );
     setTimeout(() => {
       (sentMessage as Message).delete();

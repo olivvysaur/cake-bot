@@ -6,6 +6,7 @@ import { setBirthday as setBirthdayInDb } from '../database';
 import { updateList } from '../updateList';
 import { Message } from 'discord.js';
 import { Log } from '../logging';
+import { emoji } from '../emoji';
 
 const VALID_FORMATS = ['18 October', '18/10'];
 
@@ -40,7 +41,7 @@ const setBirthday: CommandFn = async (params, msg) => {
     Log.green('Birthday updated', `**${usFormat}**`, server, { user });
 
     const sentMessage = await msg.channel.send(
-      `✅ Got it! Heads up, ${date} is ambiguous, so I assumed you meant ${usFormat}. If you meant ${ukFormat} instead, do "set ${ukFormat}".`
+      `${emoji.success} Got it! Heads up, ${date} is ambiguous, so I assumed you meant ${usFormat}. If you meant ${ukFormat} instead, do "set ${ukFormat}".`
     );
     setTimeout(() => {
       msg.delete();
@@ -55,7 +56,7 @@ const setBirthday: CommandFn = async (params, msg) => {
     );
 
     const sentMessage = await msg.channel.send(
-      `I don't understand that date. Try something like ${examples}.`
+      `${emoji.error} I don't understand that date. Try something like ${examples}.`
     );
     setTimeout(() => {
       msg.delete();
@@ -67,7 +68,7 @@ const setBirthday: CommandFn = async (params, msg) => {
 
   Log.green('Birthday updated', `**${formatDate(moment)}**`, server, { user });
 
-  const sentMessage = await msg.channel.send('✅ Got it!');
+  const sentMessage = await msg.channel.send(`${emoji.success} Got it!`);
   setTimeout(() => {
     msg.delete();
     (sentMessage as Message).delete();

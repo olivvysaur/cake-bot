@@ -11,6 +11,7 @@ import { updateList } from './updateList';
 import { PREFIX } from './constants';
 import { checkShortcuts } from './checkShortcuts';
 import { cancelPing } from './commands/notify';
+import { loadEmoji } from './emoji';
 
 loadEnv();
 
@@ -48,6 +49,8 @@ export const runCommand = async (msg: Message) => {
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
+
+  loadEmoji();
 
   const rule = new schedule.RecurrenceRule();
   rule.hour = 5;

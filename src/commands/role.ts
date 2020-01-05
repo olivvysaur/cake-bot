@@ -3,6 +3,7 @@ import Color from 'color';
 
 import { Command, CommandFn } from '../interfaces';
 import { DISCORD_BG_COLOUR, CONTRAST_THRESHOLD } from '../constants';
+import { emoji } from '../emoji';
 
 const hexToRgb = (hex: string) => {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -27,7 +28,9 @@ const roleInfo: CommandFn = async (params, msg) => {
   );
 
   if (!role) {
-    const sentMessage = await msg.channel.send("⚠️ I couldn't find that role.");
+    const sentMessage = await msg.channel.send(
+      `${emoji.error} I couldn't find that role.`
+    );
     setTimeout(() => {
       msg.delete();
       (sentMessage as Message).delete();

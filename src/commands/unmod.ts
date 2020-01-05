@@ -1,7 +1,8 @@
 import { Command, CommandFn } from '../interfaces';
 import { GuildMember, RichEmbed } from 'discord.js';
-import { client } from '..';
+
 import { DB } from '../database';
+import { emoji } from '../emoji';
 
 const removeMod: CommandFn = async (params, msg) => {
   if (params.length < 1) {
@@ -16,7 +17,9 @@ const removeMod: CommandFn = async (params, msg) => {
     role => role.name.toLowerCase() === roleName.toLowerCase()
   );
   if (!matchedRole) {
-    return msg.channel.send(`⚠️ I couldn't find a role named ${roleName}.`);
+    return msg.channel.send(
+      `${emoji.error} I couldn't find a role named ${roleName}.`
+    );
   }
 
   const modRoleArray = (await DB.getPath(`modRoles/${serverId}`)) || [];
@@ -30,7 +33,7 @@ const removeMod: CommandFn = async (params, msg) => {
 
   const embed = new RichEmbed();
   embed.title = 'Mod role removed';
-  embed.description = `${matchedRole} is no longer a mod role.`;
+  embed.description = `${emoji.success} ${matchedRole} is no longer a mod role.`;
   msg.channel.send(embed);
 };
 
