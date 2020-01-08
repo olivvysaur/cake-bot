@@ -21,6 +21,7 @@ import { shortcut } from './shortcut';
 import { emoji } from './emoji';
 import { prompt } from './prompt';
 import { hug } from './hug';
+import { contrast } from './contrast';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -41,6 +42,7 @@ export const COMMANDS: { [code: string]: Command } = {
   unmod,
   echo,
   breadify,
+  contrast,
   logging,
   shortcut,
   emoji
