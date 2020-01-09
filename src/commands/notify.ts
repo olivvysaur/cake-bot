@@ -7,7 +7,6 @@ import {
   DB
 } from '../database';
 import { findUser } from '../users';
-import { client } from '..';
 import { emoji } from '../emoji';
 
 const setupNotification: CommandFn = async (params, msg) => {
@@ -48,7 +47,6 @@ const setupNotification: CommandFn = async (params, msg) => {
   const link = msg.url;
 
   const dndUsers = await DB.getArrayAtPath('dnd');
-  console.log(receiverId, dndUsers);
   if (dndUsers.includes(receiverId)) {
     const sentMessage = await msg.channel.send(
       `${emoji.error} That person cannot be notified at the moment.`
