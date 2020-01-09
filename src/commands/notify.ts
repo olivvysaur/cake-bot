@@ -47,6 +47,19 @@ const setupNotification: CommandFn = async (params, msg) => {
   const senderName = msg.member.displayName;
   const link = msg.url;
 
+  const dndUsers = await DB.getArrayAtPath('dnd');
+  console.log(receiverId, dndUsers);
+  if (dndUsers.includes(receiverId)) {
+    const sentMessage = await msg.channel.send(
+      `${emoji.error} That person cannot be notified at the moment.`
+    );
+    setTimeout(() => {
+      msg.delete();
+      (sentMessage as Message).delete();
+    }, 5000);
+    return;
+  }
+
   const existingNotification = await getOnlineNotificationBetweenUsers(
     receiverId,
     senderId
@@ -86,7 +99,7 @@ export const cancelPing = async (reaction: MessageReaction, userId: string) => {
   } = message;
 
   if (userId === senderId) {
-    const allNotifications = await DB.getPath('onlineNotifications');
+    const allNotifications = (await DB.getPath('onlineNotifications')) || {};
     Object.keys(allNotifications).forEach(receiver => {
       const notificationsForReceiver = allNotifications[receiver];
       const notificationFromSender = notificationsForReceiver[senderId];
