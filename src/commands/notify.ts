@@ -46,6 +46,17 @@ const setupNotification: CommandFn = async (params, msg) => {
   const senderName = msg.member.displayName;
   const link = msg.url;
 
+  if (receiverId === senderId) {
+    const sentMessage = await msg.channel.send(
+      `${emoji.error} You cannot notify yourself.`
+    );
+    setTimeout(() => {
+      msg.delete();
+      (sentMessage as Message).delete();
+    }, 5000);
+    return;
+  }
+
   const dndUsers = await DB.getArrayAtPath('dnd');
   if (dndUsers.includes(receiverId)) {
     const sentMessage = await msg.channel.send(
