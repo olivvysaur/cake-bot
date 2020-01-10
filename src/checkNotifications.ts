@@ -1,8 +1,9 @@
 import Medusa from 'medusajs';
-import { TextChannel } from 'discord.js';
+import { TextChannel, RichEmbed } from 'discord.js';
 
+import { client } from './';
 import { getOnlineNotifications, deleteOnlineNotifications } from './database';
-import { client } from '.';
+import { pluralise } from './strings';
 
 const CACHE_LENGTH = 1000 * 60 * 10;
 
@@ -48,21 +49,25 @@ export const checkNotifications = async (userId: string) => {
   });
 
   const count = senders.length;
-  const introText = `${count} ${
-    count === 1 ? 'person' : 'people'
-  } left a non-urgent ping for you while you were inactive:\n\n`;
 
-  const message = senders
+  const embed = new RichEmbed();
+  embed.title = count === 1 ? 'Notification' : 'Notifications';
+  embed.description = `${pluralise(
+    count,
+    'person',
+    'people'
+  )} left a non-urgent ping for you while you were inactive.`;
+
+  senders
     .map(senderId => ({
       senderName: notifications[senderId].senderName,
       url: notifications[senderId].url
     }))
-    .reduce((dmText, notification) => {
-      const entry = `${notification.senderName}\n${notification.url}`;
-      return `${dmText}${entry}\n\n`;
-    }, introText);
+    .forEach(notification => {
+      embed.addField(notification.senderName, notification.url);
+    });
 
   const receiver = await client.fetchUser(userId);
   await receiver.createDM();
-  receiver.dmChannel.send(message);
+  receiver.dmChannel.send(embed);
 };
