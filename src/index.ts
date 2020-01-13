@@ -19,7 +19,7 @@ export const client = new Discord.Client();
 
 export const runCommand = async (msg: Message) => {
   const request = msg.content
-    .replace(PREFIX, '')
+    .slice(PREFIX.length)
     .split(' ')
     .filter(word => !!word.length);
   const code = request[0].toLowerCase();
@@ -126,7 +126,7 @@ client.on('message', async msg => {
 
   if (
     !msg.isMentioned(client.user) &&
-    !msg.content.toLowerCase().startsWith(PREFIX)
+    !msg.content.toLowerCase().startsWith(PREFIX.toLowerCase())
   ) {
     return;
   }
