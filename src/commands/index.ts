@@ -23,6 +23,7 @@ import { prompt } from './prompt';
 import { hug } from './hug';
 import { contrast } from './contrast';
 import { avatar } from './avatar';
+import { otter } from './otter';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -45,6 +46,7 @@ export const COMMANDS: { [code: string]: Command } = {
   breadify,
   contrast,
   avatar,
+  otter,
   logging,
   shortcut,
   emoji

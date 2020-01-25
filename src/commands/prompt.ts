@@ -5,8 +5,7 @@ import { DB } from '../database';
 import { PREFIX } from '../constants';
 import { deleteAfterDelay } from '../messages';
 import { emoji } from '../emoji';
-
-const random = (max: number) => Math.floor(Math.random() * max);
+import { random } from '../random';
 
 const TEN_MINUTES = 1000 * 60 * 10;
 
