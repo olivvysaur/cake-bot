@@ -8,6 +8,11 @@ import { RichEmbed } from 'discord.js';
 const OTTER_URL = 'https://www.reddit.com/r/otterable/hot.json';
 const CACHE_LENGTH = 3600;
 
+const BLACKLISTED_OTTERS = [
+  'https://i.redd.it/6adqojapkea41.jpg',
+  'https://i.redd.it/tvb4pw0r9v641.jpg'
+];
+
 const getOtter: CommandFn = async (params, msg) => {
   const serverId = msg.guild.id;
 
@@ -31,6 +36,7 @@ const getOtter: CommandFn = async (params, msg) => {
       !post.data.stickied &&
       !post.data.over_18 &&
       post.data.url !== lastOtterImage &&
+      !BLACKLISTED_OTTERS.includes(post.data.url) &&
       (post.data.domain === 'i.redd.it' ||
         post.data.domain === 'gfycat.com' ||
         post.data.domain === 'i.imgur.com')
