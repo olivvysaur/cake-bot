@@ -18,6 +18,7 @@ import { notUndefined } from '../notUndefined';
 import { pluralise } from '../strings';
 import { DISCORD_BG_COLOUR, CONTRAST_THRESHOLD, PREFIX } from '../constants';
 import { emoji } from '../emoji';
+import { random } from '../random';
 
 interface Colour {
   name: string;
@@ -57,6 +58,43 @@ const setColour = async (
     embed.description = `${user}, your colour has been removed.`;
     return embed;
   }
+
+  const roleId = chosenColor.role;
+  await user.addRole(roleId);
+
+  Log.send(
+    'Colour changed',
+    `Changed to #${colour} (**${chosenColor.name}**).`,
+    serverId,
+    { user, color: chosenColor.hex }
+  );
+
+  const embed = new RichEmbed();
+  embed.setColor(chosenColor.hex);
+  embed.title = 'Colour changed';
+  embed.description = `${user}, your colour is now **${chosenColor.name}**.`;
+  return embed;
+};
+
+const setRandomColour = async (serverId: string, user: GuildMember) => {
+  const server = client.guilds.get(serverId);
+  if (!server) {
+    return `${emoji.error} Something went wrong.\n\`Invalid server id ${serverId}\``;
+  }
+
+  const serverColours: Colour[] = await DB.getArrayAtPath(
+    `colours/${serverId}`
+  );
+
+  const colour = random(serverColours.length) + 1;
+
+  const serverColourRoles = serverColours.map(colour => colour.role);
+  const chosenColor = serverColours[colour - 1];
+
+  const existingColourRoles = user.roles.filter(role =>
+    serverColourRoles.includes(role.id)
+  );
+  await user.removeRoles(existingColourRoles);
 
   const roleId = chosenColor.role;
   await user.addRole(roleId);
@@ -533,7 +571,7 @@ const colourCommand: CommandFn = async (params, msg) => {
     return;
   }
 
-  const subCommand = params[0];
+  const subCommand = params[0].toLowerCase();
   const serverId = msg.guild.id;
 
   const modRoles = await DB.getArrayAtPath(`modRoles/${serverId}`);
@@ -552,6 +590,12 @@ const colourCommand: CommandFn = async (params, msg) => {
 
   const chosenColor = parseInt(params[1]);
   const isValid = !isNaN(chosenColor);
+
+  if (subCommand === 'random') {
+    const message = await setRandomColour(serverId, user);
+    const sentMessage = await msg.channel.send(message);
+    return deleteAfterDelay(msg, sentMessage);
+  }
 
   if (subCommand === 'help') {
     const message = getHelp(isMod);
