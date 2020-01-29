@@ -10,7 +10,8 @@ const CACHE_LENGTH = 3600;
 
 const BLACKLISTED_OTTERS = [
   'https://i.redd.it/6adqojapkea41.jpg',
-  'https://i.redd.it/tvb4pw0r9v641.jpg'
+  'https://i.redd.it/tvb4pw0r9v641.jpg',
+  'https://i.redd.it/ip9x3elwbtc41.jpg'
 ];
 
 const getOtter: CommandFn = async (params, msg) => {
