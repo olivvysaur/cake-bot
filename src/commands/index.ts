@@ -24,6 +24,7 @@ import { hug } from './hug';
 import { contrast } from './contrast';
 import { avatar } from './avatar';
 import { otter } from './otter';
+import { eightBall } from './8ball';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -49,7 +50,8 @@ export const COMMANDS: { [code: string]: Command } = {
   otter,
   logging,
   shortcut,
-  emoji
+  emoji,
+  '8ball': eightBall
 };
 
 export const findCommand = (name: string) => {
