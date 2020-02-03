@@ -28,10 +28,10 @@ export const checkShortcuts = async (message: Message) => {
     return;
   }
 
-  const text = message.content.replace(PREFIX, '');
+  const text = message.content.slice(PREFIX.length);
   const matched = shortcuts.find(shortcut => shortcut.trigger === text);
   if (matched) {
-    message.content = matched.command;
+    message.content = `${PREFIX}${matched.command}`;
     runCommand(message);
   }
 };
