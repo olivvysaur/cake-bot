@@ -12,6 +12,7 @@ import { PREFIX } from './constants';
 import { checkShortcuts } from './checkShortcuts';
 import { cancelPing } from './commands/notify';
 import { loadEmoji } from './emoji';
+import { onMemberUpdate } from './events';
 
 loadEnv();
 
@@ -76,6 +77,10 @@ client.on('guildCreate', async server => {
 client.on('guildDelete', async server => {
   removeServer(server.id);
   console.log(`Left server ${server.id} (${server.name})`);
+});
+
+client.on('guildMemberUpdate', (oldMember, newMember) => {
+  onMemberUpdate(oldMember, newMember);
 });
 
 client.on('guildMemberRemove', async member => {

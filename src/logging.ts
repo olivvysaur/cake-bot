@@ -46,6 +46,7 @@ export interface LogOptions {
   attachment?: string | Attachment | FileOptions;
   iconUrl?: string;
   author?: User;
+  customFields?: { name: string; value: any }[];
 }
 
 export class Log {
@@ -62,7 +63,7 @@ export class Log {
 
     const embed = new RichEmbed();
     embed.title = title;
-    embed.description = `${message}\n\u200B`;
+    embed.description = !!message ? `${message}\n\u200B` : undefined;
     embed.timestamp = new Date();
 
     if (!!options.color) {
@@ -70,8 +71,15 @@ export class Log {
     }
 
     if (!!options.user) {
+      const {
+        nickname,
+        user: { tag }
+      } = options.user;
+
+      const displayName = !!nickname ? `${nickname} (${tag})` : tag;
+
       embed.author = {
-        name: `${options.user.displayName} (${options.user.user.tag})`,
+        name: displayName,
         icon_url: options.user.user.avatarURL
       };
       embed.footer = { text: `User ID: ${options.user.user.id}` };
@@ -88,7 +96,13 @@ export class Log {
       embed.attachFile(options.attachment);
     }
 
-    (logChannel as TextChannel).send(embed);
+    if (!!options.customFields) {
+      options.customFields.forEach(field => {
+        embed.addField(field.name, field.value, false);
+      });
+    }
+
+    return (logChannel as TextChannel).send(embed);
   };
 
   static color = (color: string) => async (
