@@ -50,30 +50,33 @@ const setColour = async (
   const existingColourRoles = user.roles.filter(role =>
     serverColourRoles.includes(role.id)
   );
+
   await user.removeRoles(existingColourRoles);
+  await new Promise(resolve => setTimeout(resolve, 200));
 
   if (colour === 0) {
+    Log.send('Colour removed', `Removed all colour roles.`, serverId, { user });
+
     const embed = new RichEmbed();
     embed.title = 'Colour removed';
     embed.description = `${user}, your colour has been removed.`;
     return embed;
+  } else {
+    await user.addRole(chosenColor.role);
+
+    Log.send(
+      'Colour changed',
+      `Changed to #${colour} (**${chosenColor.name}**).`,
+      serverId,
+      { user, color: chosenColor.hex }
+    );
+
+    const embed = new RichEmbed();
+    embed.setColor(chosenColor.hex);
+    embed.title = 'Colour changed';
+    embed.description = `${user}, your colour is now **${chosenColor.name}**.`;
+    return embed;
   }
-
-  const roleId = chosenColor.role;
-  await user.addRole(roleId);
-
-  Log.send(
-    'Colour changed',
-    `Changed to #${colour} (**${chosenColor.name}**).`,
-    serverId,
-    { user, color: chosenColor.hex }
-  );
-
-  const embed = new RichEmbed();
-  embed.setColor(chosenColor.hex);
-  embed.title = 'Colour changed';
-  embed.description = `${user}, your colour is now **${chosenColor.name}**.`;
-  return embed;
 };
 
 const setRandomColour = async (serverId: string, user: GuildMember) => {
@@ -101,7 +104,7 @@ const setRandomColour = async (serverId: string, user: GuildMember) => {
 
   Log.send(
     'Colour changed',
-    `Changed to #${colour} (**${chosenColor.name}**).`,
+    `Randomly changed to #${colour} (**${chosenColor.name}**).`,
     serverId,
     { user, color: chosenColor.hex }
   );
