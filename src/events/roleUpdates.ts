@@ -37,7 +37,6 @@ export const onRolesUpdated = async (
   const duplicates = allAdded.filter(role => allRemoved.includes(role));
 
   const existingMessage = existingRecord.logMessage;
-  console.log(existingRecord);
 
   if (!!duplicates.length || !existingMessage) {
     const addedField = !!addedRoles.length
@@ -91,12 +90,3 @@ export const onRolesUpdated = async (
     );
   }
 };
-
-// <client>.on('guildMemberUpdate', (oldMember, newMember) => {
-
-// 	const removedRoles = oldMember.roles.filter(role => !newMember.roles.has(role.id));
-// 	if(removedRoles.size > 0) console.log(`The roles ${removedRoles.map(r => r.name)} were added to ${oldMember.displayName}.`);
-
-// 	const addedRoles = newMember.roles.filter(role => !oldMember.roles.has(role.id));
-// 	if(addedRoles.size > 0) console.log(`The roles ${addedRoles.map(r => r.name)} were removed from ${oldMember.displayName}.`);
-// });

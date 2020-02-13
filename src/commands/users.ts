@@ -39,8 +39,6 @@ const getUsers: CommandFn = (params, msg) => {
     }
   } while (match);
 
-  console.log(filterQueries);
-
   const tenureQuery = filterQueries.find(
     filter => filter[1].toLowerCase() === 'tenure'
   );
