@@ -1,4 +1,5 @@
 import { Message, CollectorFilter, RichEmbed } from 'discord.js';
+import _ from 'lodash';
 
 import { Command, CommandFn } from '../interfaces';
 import { DB } from '../database';
@@ -70,11 +71,31 @@ const promptCommand: CommandFn = async (params, msg) => {
     }
 
     const count = Object.keys(serverPrompts).length;
-    if (count === 1) {
-      return channel.send('There is currently 1 prompt saved.');
-    } else {
-      return channel.send(`There are currently ${count} prompts saved.`);
-    }
+
+    const promptsByUser = _.groupBy(serverPrompts, prompt => prompt.user);
+    const countByUser: { [user: string]: any[] } = Object.keys(
+      promptsByUser
+    ).reduce(
+      (out, user) => ({
+        ...out,
+        [user]: promptsByUser[user].length
+      }),
+      {}
+    );
+
+    const list = Object.keys(countByUser)
+      .map(user =>
+        user !== 'undefined'
+          ? `${countByUser[user]} - <@${user}>`
+          : `${countByUser[user]} - unknown`
+      )
+      .join('\n');
+
+    const embed = new RichEmbed();
+    embed.title = 'Prompt count';
+    embed.addField('Total prompts', count);
+    embed.addField('Prompts by user', list);
+    return channel.send(embed);
   }
 
   const promptToAdd = params.join(' ');
