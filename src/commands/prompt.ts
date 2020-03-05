@@ -83,7 +83,13 @@ const promptCommand: CommandFn = async (params, msg) => {
       {}
     );
 
-    const list = Object.keys(countByUser)
+    const sortedCounts = _.sortBy(
+      Object.keys(countByUser),
+      (user: string) => countByUser[user]
+    );
+
+    const list = sortedCounts
+      .reverse()
       .map(user =>
         user !== 'undefined'
           ? `${countByUser[user]} - <@${user}>`
