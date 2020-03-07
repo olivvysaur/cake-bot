@@ -68,6 +68,10 @@ const promptCommand: CommandFn = async (params, msg) => {
           .filter(reaction => reaction.emoji.name !== '✏️')
           .forEach(reaction => reaction.remove());
       }
+    } else {
+      sentMessage.reactions
+        .filter(reaction => reaction.emoji.name !== '✏️')
+        .forEach(reaction => reaction.remove());
     }
     return;
   }
