@@ -53,12 +53,20 @@ const promptCommand: CommandFn = async (params, msg) => {
       time: TEN_MINUTES,
       max: 1
     });
-    sentMessage.clearReactions();
+
     if (!!reactions && !!reactions.size) {
       if (reactions.first().emoji.name === '♻️') {
+        sentMessage.reactions
+          .filter(reaction => reaction.emoji.name !== '♻️')
+          .forEach(reaction => reaction.remove());
         await DB.pushAtPath(`prompts/${serverId}`, selectedPrompt);
         await sentMessage.edit(`Prompt re-added to the suggestion pile.`);
-        // deleteAfterDelay(msg, sentMessage);
+      }
+
+      if (reactions.first().emoji.name === '✏️') {
+        sentMessage.reactions
+          .filter(reaction => reaction.emoji.name !== '✏️')
+          .forEach(reaction => reaction.remove());
       }
     }
     return;
