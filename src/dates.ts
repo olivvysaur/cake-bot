@@ -39,7 +39,7 @@ export const parseDate = (date: string) => {
   }
 
   const parsed = moment(date);
-  if (parsed.isValid) {
+  if (parsed.isValid()) {
     return parsed;
   }
 

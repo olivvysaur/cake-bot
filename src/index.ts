@@ -1,6 +1,5 @@
 import Discord, { Message, User } from 'discord.js';
 import { config as loadEnv } from 'dotenv';
-import schedule from 'node-schedule';
 
 import { COMMANDS, findCommand } from './commands';
 import { announceBirthdays } from './announce';
@@ -13,6 +12,9 @@ import { checkShortcuts } from './checkShortcuts';
 import { cancelPing } from './commands/notify';
 import { loadEmoji } from './emoji';
 import { onMemberUpdate } from './events';
+import { announceFreeEpicGames } from './jobs/epicGames/epicGames';
+import { time } from './times';
+import { scheduleRecurringCallback } from './schedule';
 
 loadEnv();
 
@@ -53,20 +55,19 @@ client.on('ready', () => {
 
   loadEmoji();
 
-  const rule = new schedule.RecurrenceRule();
-  rule.hour = 5;
-  rule.minute = 0;
+  scheduleRecurringCallback({
+    callback: announceBirthdays,
+    hour: 5,
+    minute: 0,
+    name: 'birthday announcement  '
+  });
 
-  schedule.scheduleJob(rule, announceBirthdays);
-  console.log('Scheduled announcement for 5:00 AM.');
-
-  // client.guilds.forEach(guild =>
-  //   Log.green(
-  //     'Connected',
-  //     'Cakebot is connected to Discord and ready to receive commands.',
-  //     guild.id
-  //   )
-  // );
+  scheduleRecurringCallback({
+    callback: announceFreeEpicGames,
+    hour: 16,
+    minute: 30,
+    name: 'Epic Games announcement'
+  });
 });
 
 client.on('guildCreate', async server => {

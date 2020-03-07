@@ -1,0 +1,1 @@
+export { getFreeEpicGames } from './epicGames';
