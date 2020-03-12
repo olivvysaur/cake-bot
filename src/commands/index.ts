@@ -25,6 +25,7 @@ import { contrast } from './contrast';
 import { avatar } from './avatar';
 import { otter } from './otter';
 import { eightBall } from './8ball';
+import { gif } from './gif';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -51,7 +52,8 @@ export const COMMANDS: { [code: string]: Command } = {
   logging,
   shortcut,
   emoji,
-  '8ball': eightBall
+  '8ball': eightBall,
+  gif
 };
 
 export const findCommand = (name: string) => {
