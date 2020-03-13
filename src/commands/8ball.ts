@@ -17,7 +17,7 @@ const POSITIVE_RESPONSES = [
 const NEUTRAL_RESPONSES = [
   'Reply hazy, try again.',
   'Ask again later.',
-  'Better not tell you now.',
+  "I'd rather get *your* opinion.",
   'Cannot predict now.',
   'Concentrate and ask again.'
 ];
