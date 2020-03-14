@@ -44,7 +44,6 @@ const getGif: CommandFn = async (params, msg) => {
     const url = `${GIPHY_TRANSLATE_URL}?${query}`;
 
     const response = await axios.get(url);
-    console.log(response);
     if (response.status !== 200) {
       console.error(`gif command failed due to error ${response.status}`);
       return channel.send(
