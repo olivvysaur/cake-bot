@@ -26,6 +26,7 @@ import { avatar } from './avatar';
 import { otter } from './otter';
 import { eightBall } from './8ball';
 import { gif } from './gif';
+import { epicgames } from './epicgames';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -53,7 +54,8 @@ export const COMMANDS: { [code: string]: Command } = {
   shortcut,
   emoji,
   '8ball': eightBall,
-  gif
+  gif,
+  epicgames
 };
 
 export const findCommand = (name: string) => {

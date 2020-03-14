@@ -1,1 +1,1 @@
-export { getFreeEpicGames } from './epicGames';
+export * from './epicGames';

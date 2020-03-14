@@ -1,11 +1,13 @@
 import axios from 'axios';
 import moment from 'moment';
+import _ from 'lodash';
 import { RichEmbed, TextChannel } from 'discord.js';
 
 import { DB } from '../../database';
 
 import { EPIC_API_URL, GRAPHQL_QUERY } from './constants';
 import { client } from '../..';
+import { pluralise } from '../../strings';
 
 interface GameDetails {
   name: string;
@@ -17,7 +19,7 @@ interface GameDetails {
 
 const parseResponse = (response: any): GameDetails[] => {
   const items = response.data.Catalog.catalogOffers.elements;
-  return items
+  const parsedItems = items
     .filter(
       (item: any) =>
         !!item.promotions.promotionalOffers?.[0]?.promotionalOffers.length
@@ -32,6 +34,8 @@ const parseResponse = (response: any): GameDetails[] => {
         item.promotions.promotionalOffers[0].promotionalOffers[0].startDate,
       endDate: item.promotions.promotionalOffers[0].promotionalOffers[0].endDate
     }));
+
+  return _.uniqBy(parsedItems, item => item.name);
 };
 
 const buildAnnouncements = (games: any[]) =>
@@ -65,6 +69,7 @@ export const getFreeEpicGames = async () => {
 export const announceFreeEpicGames = async () => {
   const games = await getFreeEpicGames();
   if (!games) {
+    console.error('[epicgames] Failed to fetch free games from Epic.');
     return;
   }
 
@@ -76,12 +81,19 @@ export const announceFreeEpicGames = async () => {
   if (gamesToAnnounce.length > 0) {
     await DB.deletePath('epicGames/currentGames');
     games.forEach(game => DB.pushAtPath('epicGames/currentGames', game.name));
+    console.log(
+      `[epicgames] ${pluralise(gamesToAnnounce.length, 'game')} to announce.`
+    );
+  } else {
+    console.log('[epicgames] No new games to announce.');
+    return;
   }
 
   const announcements = buildAnnouncements(gamesToAnnounce);
 
   const servers = await DB.getPath('epicGames/servers');
   if (!servers) {
+    console.error('[epicgames] No servers set up to receive announcements.');
     return;
   }
 
@@ -92,4 +104,11 @@ export const announceFreeEpicGames = async () => {
       announcements.forEach(announcement => channel.send(announcement));
     }
   });
+
+  console.log(
+    `[epicgames] Made announcement in ${pluralise(
+      Object.keys(servers).length,
+      'server'
+    )}.`
+  );
 };
