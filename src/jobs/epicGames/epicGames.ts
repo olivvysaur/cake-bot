@@ -22,7 +22,7 @@ const parseResponse = (response: any): GameDetails[] => {
   const parsedItems = items
     .filter(
       (item: any) =>
-        !!item.promotions.promotionalOffers?.[0]?.promotionalOffers.length
+        !!item.promotions?.promotionalOffers?.[0]?.promotionalOffers.length
     )
     .map((item: any) => ({
       name: item.title,
