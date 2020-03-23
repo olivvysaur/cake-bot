@@ -24,6 +24,11 @@ const parseResponse = (response: any): GameDetails[] => {
       (item: any) =>
         !!item.promotions?.promotionalOffers?.[0]?.promotionalOffers.length
     )
+    .filter(
+      (item: any) =>
+        item.promotions.promotionalOffers[0].promotionalOffers[0]
+          .discountSetting.discountPercentage === 0
+    )
     .map((item: any) => ({
       name: item.title,
       image: item.keyImages.find(
