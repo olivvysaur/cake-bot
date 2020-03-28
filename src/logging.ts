@@ -45,6 +45,8 @@ export interface LogOptions {
   color?: string;
   attachment?: string | Attachment | FileOptions;
   iconUrl?: string;
+  imageUrl?: string;
+  thumbnailUrl?: string;
   author?: User;
   customFields?: { name: string; value: any }[];
 }
@@ -89,6 +91,18 @@ export class Log {
       embed.author = {
         name: options.author.tag,
         icon_url: options.author.displayAvatarURL
+      };
+    }
+
+    if (!!options.imageUrl) {
+      embed.image = {
+        url: options.imageUrl
+      };
+    }
+
+    if (!!options.thumbnailUrl) {
+      embed.thumbnail = {
+        url: options.thumbnailUrl
       };
     }
 

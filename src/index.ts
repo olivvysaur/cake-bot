@@ -15,6 +15,7 @@ import { onMemberUpdate } from './events';
 import { announceFreeEpicGames } from './jobs/epicGames/epicGames';
 import { time } from './times';
 import { scheduleRecurringCallback } from './schedule';
+import { onUserUpdate } from './events/userUpdate';
 
 loadEnv();
 
@@ -82,6 +83,10 @@ client.on('guildDelete', async server => {
 
 client.on('guildMemberUpdate', (oldMember, newMember) => {
   onMemberUpdate(oldMember, newMember);
+});
+
+client.on('userUpdate', (oldUser, newUser) => {
+  onUserUpdate(oldUser, newUser);
 });
 
 client.on('guildMemberRemove', async member => {
