@@ -15,10 +15,10 @@ export const onAvatarUpdated = async (user: User) => {
   const userId = user.id;
 
   const commonServerIds = client.guilds
-    .filter(guild => !!guild.members.get(userId))
+    .filter((guild) => !!guild.members.get(userId))
     .keyArray();
 
-  commonServerIds.forEach(async serverId => {
+  commonServerIds.forEach(async (serverId) => {
     const existingRecord: AvatarUpdateRecord = await Medusa.get(
       `avatarUpdates.${serverId}.${userId}`,
       async (resolve: (value: any) => void) => {
@@ -32,21 +32,16 @@ export const onAvatarUpdated = async (user: User) => {
     const guildMember = client.guilds.get(serverId)?.members.get(userId);
 
     if (!existingMessage) {
-      const sentMessage = await Log.send(
-        'Avatar changed',
-        'Changed 1 time.',
-        serverId,
-        {
-          user: guildMember,
-          thumbnailUrl: user.avatarURL
-        }
-      );
+      const sentMessage = await Log.send('Avatar changed', '', serverId, {
+        user: guildMember,
+        thumbnailUrl: user.avatarURL,
+      });
 
       await Medusa.put(
         `avatarUpdates.${serverId}.${userId}`,
         {
           count: 1,
-          logMessage: sentMessage
+          logMessage: sentMessage,
         },
         BATCH_THRESHOLD
       );
@@ -67,7 +62,7 @@ export const onAvatarUpdated = async (user: User) => {
         `avatarUpdates.${serverId}.${userId}`,
         {
           count: newCount,
-          logMessage: updatedMessage
+          logMessage: updatedMessage,
         },
         BATCH_THRESHOLD
       );
