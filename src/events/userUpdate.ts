@@ -5,8 +5,6 @@ export const onUserUpdate = (oldUser: User, newUser: User) => {
   const { avatarURL: oldAvatarURL } = oldUser;
   const { avatarURL: newAvatarURL } = newUser;
 
-  console.log(oldAvatarURL, newAvatarURL);
-
   if (newAvatarURL !== oldAvatarURL) {
     onAvatarUpdated(newUser);
   }
