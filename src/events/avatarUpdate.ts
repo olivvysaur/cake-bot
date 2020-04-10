@@ -32,10 +32,15 @@ export const onAvatarUpdated = async (user: User) => {
     const guildMember = client.guilds.get(serverId)?.members.get(userId);
 
     if (!existingMessage) {
-      const sentMessage = await Log.send('Avatar changed', '', serverId, {
-        user: guildMember,
-        thumbnailUrl: user.avatarURL,
-      });
+      const sentMessage = await Log.send(
+        'Avatar changed',
+        `${user}`,
+        serverId,
+        {
+          user: guildMember,
+          thumbnailUrl: user.avatarURL,
+        }
+      );
 
       await Medusa.put(
         `avatarUpdates.${serverId}.${userId}`,
@@ -55,7 +60,7 @@ export const onAvatarUpdated = async (user: User) => {
       newEmbed.thumbnail = { url: user.avatarURL };
 
       const newCount = existingRecord.count + 1;
-      newEmbed.description = `Changed ${newCount} times.`;
+      newEmbed.description = `${user}\nChanged ${newCount} times.`;
 
       const updatedMessage = await existingMessage.edit(newEmbed);
       await Medusa.put(

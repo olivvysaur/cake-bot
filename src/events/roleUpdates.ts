@@ -21,8 +21,8 @@ export const onRolesUpdated = async (
   const userId = user.user.id;
   const serverId = user.guild.id;
 
-  const addedRoles = newRoles.filter(role => !oldRoles.includes(role));
-  const removedRoles = oldRoles.filter(role => !newRoles.includes(role));
+  const addedRoles = newRoles.filter((role) => !oldRoles.includes(role));
+  const removedRoles = oldRoles.filter((role) => !newRoles.includes(role));
 
   const existingRecord: RoleUpdateRecord = await Medusa.get(
     `roleUpdates.${userId}`,
@@ -34,7 +34,7 @@ export const onRolesUpdated = async (
 
   const allAdded = [...existingRecord.added, ...addedRoles];
   const allRemoved = [...existingRecord.removed, ...removedRoles];
-  const duplicates = allAdded.filter(role => allRemoved.includes(role));
+  const duplicates = allAdded.filter((role) => allRemoved.includes(role));
 
   const existingMessage = existingRecord.logMessage;
 
@@ -49,9 +49,9 @@ export const onRolesUpdated = async (
 
     const fields = [addedField, removedField].filter(notUndefined);
 
-    const sentMessage = await Log.send('Roles updated', '', serverId, {
+    const sentMessage = await Log.send('Roles updated', `${user}`, serverId, {
       user,
-      customFields: fields
+      customFields: fields,
     });
 
     await Medusa.put(
@@ -59,7 +59,7 @@ export const onRolesUpdated = async (
       {
         added: addedRoles,
         removed: removedRoles,
-        logMessage: sentMessage
+        logMessage: sentMessage,
       },
       BATCH_THRESHOLD
     );
@@ -84,7 +84,7 @@ export const onRolesUpdated = async (
       {
         added: allAdded,
         removed: allRemoved,
-        logMessage: updatedMessage
+        logMessage: updatedMessage,
       },
       BATCH_THRESHOLD
     );
