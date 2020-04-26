@@ -16,6 +16,7 @@ import { announceFreeEpicGames } from './jobs/epicGames/epicGames';
 import { time } from './times';
 import { scheduleRecurringCallback } from './schedule';
 import { onUserUpdate } from './events/userUpdate';
+import { onMessageReceived } from './events/messageReceived';
 
 loadEnv();
 
@@ -25,7 +26,7 @@ export const runCommand = async (msg: Message) => {
   const request = msg.content
     .slice(PREFIX.length)
     .split(' ')
-    .filter(word => !!word.length);
+    .filter((word) => !!word.length);
   const code = request[0].toLowerCase();
   const params = request.slice(1);
 
@@ -41,7 +42,7 @@ export const runCommand = async (msg: Message) => {
 
     if (
       !!modRoles.length &&
-      !userRoles.find(role => modRoles.includes(role.id))
+      !userRoles.find((role) => modRoles.includes(role.id))
     ) {
       console.log('tried to execute mod command without permission');
       return;
@@ -60,23 +61,23 @@ client.on('ready', () => {
     callback: announceBirthdays,
     hour: 5,
     minute: 0,
-    name: 'birthday announcement  '
+    name: 'birthday announcement  ',
   });
 
   scheduleRecurringCallback({
     callback: announceFreeEpicGames,
     hour: 16,
     minute: 30,
-    name: 'Epic Games announcement'
+    name: 'Epic Games announcement',
   });
 });
 
-client.on('guildCreate', async server => {
+client.on('guildCreate', async (server) => {
   addServer(server.id);
   console.log(`Joined server ${server.id} (${server.name})`);
 });
 
-client.on('guildDelete', async server => {
+client.on('guildDelete', async (server) => {
   removeServer(server.id);
   console.log(`Left server ${server.id} (${server.name})`);
 });
@@ -89,13 +90,13 @@ client.on('userUpdate', (oldUser, newUser) => {
   onUserUpdate(oldUser, newUser);
 });
 
-client.on('guildMemberRemove', async member => {
+client.on('guildMemberRemove', async (member) => {
   const serverId = member.guild.id;
   const userId = member.id;
 
   const auditLog = await member.guild.fetchAuditLogs({
     type: 'MEMBER_KICK',
-    limit: 1
+    limit: 1,
   });
   const entry = auditLog.entries.first();
   if (entry) {
@@ -130,10 +131,12 @@ client.on('guildMemberRemove', async member => {
   );
 });
 
-client.on('message', async msg => {
+client.on('message', async (msg) => {
   if (msg.member && msg.member.id) {
     checkNotifications(msg.member.id);
   }
+
+  onMessageReceived(msg);
 
   if (
     !msg.isMentioned(client.user) &&
