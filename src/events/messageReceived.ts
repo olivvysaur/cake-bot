@@ -2,7 +2,7 @@ import { Message } from 'discord.js';
 
 import { setupNotification } from '../commands/notify';
 
-const notifyRegexWithoutSpaces = /!!([^\s\(]+)/g;
+const notifyRegexWithoutSpaces = /!!([^\s\(,\.]+)/g;
 const notifyRegexWithSpaces = /!!\(([\S ]+)\)/g;
 
 export const onMessageReceived = async (msg: Message) => {
