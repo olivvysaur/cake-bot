@@ -117,6 +117,7 @@ export const cancelPing = async (reaction: MessageReaction, userId: string) => {
       const notificationFromSender = notificationsForReceiver[senderId];
       if (!!notificationFromSender && notificationFromSender.url === url) {
         DB.deletePath(`onlineNotifications/${receiver}/${senderId}`);
+        message.clearReactions();
       }
     });
     return;
@@ -128,7 +129,6 @@ export const cancelPing = async (reaction: MessageReaction, userId: string) => {
   );
   if (!!notification && notification.url === url) {
     DB.deletePath(`onlineNotifications/${userId}/${senderId}`);
-    message.clearReactions();
   }
 };
 
