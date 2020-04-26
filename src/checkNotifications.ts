@@ -35,19 +35,6 @@ export const checkNotifications = async (userId: string) => {
     return;
   }
 
-  senders.forEach(async senderId => {
-    const url: string = notifications[senderId].url;
-
-    const segments = url.split('/');
-    const messageId = segments[segments.length - 1];
-    const channelId = segments[segments.length - 2];
-
-    const channel = client.channels.get(channelId) as TextChannel;
-    const message = await channel.fetchMessage(messageId);
-
-    message.clearReactions();
-  });
-
   const count = senders.length;
 
   const embed = new RichEmbed();
@@ -59,11 +46,11 @@ export const checkNotifications = async (userId: string) => {
   )} left a non-urgent ping for you while you were inactive.`;
 
   senders
-    .map(senderId => ({
+    .map((senderId) => ({
       senderName: notifications[senderId].senderName,
-      url: notifications[senderId].url
+      url: notifications[senderId].url,
     }))
-    .forEach(notification => {
+    .forEach((notification) => {
       embed.addField(notification.senderName, notification.url);
     });
 
