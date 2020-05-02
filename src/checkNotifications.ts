@@ -18,9 +18,13 @@ export const checkNotifications = async (userId: string) => {
     CACHE_LENGTH
   );
 
+  const senders = !!notifications ? Object.keys(notifications) : [];
+
+  if (!notifications || !senders.length) {
+    return;
+  }
+
   // Empty the value in the cache to avoid re-sending cached notifications.
-  // This also refreshes the cache period whenever someone speaks so that
-  // they don't get pinged while active.
   await Medusa.put(
     `onlineNotifications.${userId}`,
     (resolve: (value: any) => void) => {
@@ -28,12 +32,6 @@ export const checkNotifications = async (userId: string) => {
     },
     CACHE_LENGTH
   );
-
-  const senders = !!notifications ? Object.keys(notifications) : [];
-
-  if (!notifications || !senders.length) {
-    return;
-  }
 
   const count = senders.length;
 
