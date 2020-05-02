@@ -64,12 +64,12 @@ client.on('ready', () => {
     name: 'Birthday announcement',
   });
 
-  scheduleRecurringCallback({
-    callback: announceFreeEpicGames,
-    hour: 16,
-    minute: 30,
-    name: 'Epic Games announcement',
-  });
+  // scheduleRecurringCallback({
+  //   callback: announceFreeEpicGames,
+  //   hour: 16,
+  //   minute: 30,
+  //   name: 'Epic Games announcement',
+  // });
 });
 
 client.on('guildCreate', async (server) => {
