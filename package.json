@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Discord bot for distributing cake.",
   "main": "./src/index.ts",
+  "engines": {
+    "node": "12.16.2"
+  },
   "scripts": {
     "start": "node -r ts-node/register ./src/index.ts",
     "dev": "nodemon",
