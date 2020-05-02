@@ -61,7 +61,7 @@ client.on('ready', () => {
     callback: announceBirthdays,
     hour: 5,
     minute: 0,
-    name: 'birthday announcement  ',
+    name: 'Birthday announcement',
   });
 
   scheduleRecurringCallback({
