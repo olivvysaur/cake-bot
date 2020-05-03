@@ -19,6 +19,7 @@ export const scheduleRecurringCallback = ({
 }: RecurringCallbackConfig) => {
   if (scheduledCallbacks.includes(name)) {
     console.log(`${name} is already scheduled, skipping scheduling`);
+    return;
   }
 
   const rule = new schedule.RecurrenceRule();
