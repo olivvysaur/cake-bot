@@ -108,7 +108,7 @@ const setColorByName = async (
 
   Log.send(
     'Colour changed',
-    `Changed to #${colour} (**${matchedColour.name}**).`,
+    `Changed to **${matchedColour.name}**.`,
     serverId,
     { user, color: matchedColour.hex }
   );
