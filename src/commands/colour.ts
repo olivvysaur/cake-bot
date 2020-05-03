@@ -4,7 +4,7 @@ import {
   Attachment,
   TextChannel,
   Message,
-  Util
+  Util,
 } from 'discord.js';
 import { createCanvas } from 'canvas';
 import Color from 'color';
@@ -44,15 +44,15 @@ const setColour = async (
     return `${emoji.error} No colour exists with number ${colour}.`;
   }
 
-  const serverColourRoles = serverColours.map(colour => colour.role);
+  const serverColourRoles = serverColours.map((colour) => colour.role);
   const chosenColor = serverColours[colour - 1];
 
-  const existingColourRoles = user.roles.filter(role =>
+  const existingColourRoles = user.roles.filter((role) =>
     serverColourRoles.includes(role.id)
   );
 
   await user.removeRoles(existingColourRoles);
-  await new Promise(resolve => setTimeout(resolve, 200));
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
   if (colour === 0) {
     Log.send('Colour removed', `Removed all colour roles.`, serverId, { user });
@@ -79,6 +79,47 @@ const setColour = async (
   }
 };
 
+const setColorByName = async (
+  serverId: string,
+  user: GuildMember,
+  query: string
+) => {
+  const serverColours: Colour[] = await DB.getArrayAtPath(
+    `colours/${serverId}`
+  );
+
+  const matchedColour = serverColours.find(
+    (c) => c.name.toLowerCase() === query.toLowerCase()
+  );
+  if (!matchedColour) {
+    return `${emoji.error} There isn't a colour named "${query}".`;
+  }
+
+  const serverColourRoles = serverColours.map((colour) => colour.role);
+
+  const existingColourRoles = user.roles.filter((role) =>
+    serverColourRoles.includes(role.id)
+  );
+
+  await user.removeRoles(existingColourRoles);
+  await new Promise((resolve) => setTimeout(resolve, 200));
+
+  await user.addRole(matchedColour.role);
+
+  Log.send(
+    'Colour changed',
+    `Changed to #${colour} (**${matchedColour.name}**).`,
+    serverId,
+    { user, color: matchedColour.hex }
+  );
+
+  const embed = new RichEmbed();
+  embed.setColor(matchedColour.hex);
+  embed.title = 'Colour changed';
+  embed.description = `${user}, your colour is now **${matchedColour.name}**.`;
+  return embed;
+};
+
 const setRandomColour = async (serverId: string, user: GuildMember) => {
   const server = client.guilds.get(serverId);
   if (!server) {
@@ -91,10 +132,10 @@ const setRandomColour = async (serverId: string, user: GuildMember) => {
 
   const colour = random(serverColours.length) + 1;
 
-  const serverColourRoles = serverColours.map(colour => colour.role);
+  const serverColourRoles = serverColours.map((colour) => colour.role);
   const chosenColor = serverColours[colour - 1];
 
-  const existingColourRoles = user.roles.filter(role =>
+  const existingColourRoles = user.roles.filter((role) =>
     serverColourRoles.includes(role.id)
   );
   await user.removeRoles(existingColourRoles);
@@ -150,9 +191,9 @@ const listColours = async (serverId: string) => {
   fakeCtx.font = font;
 
   const longestWidths = longestName.map(
-    longest => fakeCtx.measureText(`999. ${longest}`).width
+    (longest) => fakeCtx.measureText(`999. ${longest}`).width
   );
-  const columnWidths = longestWidths.map(width => width);
+  const columnWidths = longestWidths.map((width) => width);
   const startPositions = columnWidths.map((width, index) => {
     const previousColumns = columnWidths.slice(0, index);
     return previousColumns.reduce((acc, val) => acc + val, 0);
@@ -193,8 +234,8 @@ const pinColourList = async (serverId: string, channel: TextChannel) => {
 
   const pins = await channel.fetchPinnedMessages();
   pins
-    .filter(pin => pin.member.id === client.user.id)
-    .forEach(pin => pin.unpin());
+    .filter((pin) => pin.member.id === client.user.id)
+    .forEach((pin) => pin.unpin());
 
   (sentMessage as Message).pin();
 };
@@ -221,13 +262,13 @@ const createColour = async (
   const colourRole = await server.createRole({
     name,
     color: hex,
-    position: newRolePosition
+    position: newRolePosition,
   });
 
   const colourData: Colour = {
     name,
     hex,
-    role: colourRole.id
+    role: colourRole.id,
   };
   await DB.pushAtPath(`colours/${serverId}`, colourData);
 
@@ -278,7 +319,7 @@ const renameColour = async (
 
   const updatedColor = {
     ...chosenColor,
-    name
+    name,
   };
   await DB.setPath(`colours/${serverId}/${chosenKey}`, updatedColor);
 
@@ -331,7 +372,7 @@ const deleteColour = async (
     serverId,
     {
       user,
-      color: chosenColor.hex
+      color: chosenColor.hex,
     }
   );
 
@@ -353,7 +394,7 @@ const importColour = async (
   }
 
   const matchedRole = server.roles.find(
-    role => role.name.toLowerCase() === roleName.toLowerCase()
+    (role) => role.name.toLowerCase() === roleName.toLowerCase()
   );
   if (!matchedRole) {
     return `${emoji.error} I couldn't find a role named ${roleName}.`;
@@ -364,7 +405,7 @@ const importColour = async (
   );
   const colourCount = !!serverColours ? serverColours.length : 0;
 
-  if (!!serverColours.find(colour => colour.role === matchedRole.id)) {
+  if (!!serverColours.find((colour) => colour.role === matchedRole.id)) {
     return `${emoji.error} I already know about ${matchedRole.name}.`;
   }
 
@@ -372,7 +413,7 @@ const importColour = async (
   const colourData: Colour = {
     name,
     hex: hexColor.replace('#', ''),
-    role: id
+    role: id,
   };
   await DB.pushAtPath(`colours/${serverId}`, colourData);
 
@@ -443,7 +484,7 @@ const colourStats = async (serverId: string) => {
   }
 
   const ranking = serverColours
-    .map(colour => {
+    .map((colour) => {
       const { name, hex, role: roleId } = colour;
 
       const role = server.roles.get(roleId);
@@ -457,7 +498,7 @@ const colourStats = async (serverId: string) => {
       return {
         name,
         hex,
-        count: role.members.size
+        count: role.members.size,
       };
     })
     .filter(notUndefined)
@@ -465,13 +506,17 @@ const colourStats = async (serverId: string) => {
 
   const top = ranking
     .slice(0, 10)
-    .map(item => `${item.name} - ${pluralise(item.count, 'person', 'people')}`)
+    .map(
+      (item) => `${item.name} - ${pluralise(item.count, 'person', 'people')}`
+    )
     .join('\n');
 
   const bottom = ranking
     .slice(-10)
     .reverse()
-    .map(item => `${item.name} - ${pluralise(item.count, 'person', 'people')}`)
+    .map(
+      (item) => `${item.name} - ${pluralise(item.count, 'person', 'people')}`
+    )
     .join('\n');
 
   const embed = new RichEmbed();
@@ -498,7 +543,7 @@ const colourAccessibility = async (serverId: string, channel: TextChannel) => {
   }
 
   const list = serverColours
-    .map(colourData => {
+    .map((colourData) => {
       const { name, hex } = colourData;
       const colour = Color(`#${hex}`);
 
@@ -581,7 +626,7 @@ const colourCommand: CommandFn = async (params, msg) => {
 
   const user = msg.member;
   const isMod = !!modRoles.length
-    ? !!user.roles.find(role => modRoles.includes(role.id))
+    ? !!user.roles.find((role) => modRoles.includes(role.id))
     : true;
 
   const setNumber = subCommand === 'remove' ? 0 : parseInt(subCommand);
@@ -634,6 +679,7 @@ const colourCommand: CommandFn = async (params, msg) => {
     if (channel instanceof TextChannel) {
       await reorderColours(serverId, channel);
     }
+    return;
   }
 
   if (subCommand === 'add' && isMod) {
@@ -673,6 +719,14 @@ const colourCommand: CommandFn = async (params, msg) => {
     const sentMessage = await msg.channel.send(message);
     return deleteAfterDelay(msg, sentMessage);
   }
+
+  const message = await setColorByName(
+    serverId,
+    msg.member,
+    params.join(' ').trim()
+  );
+  const sentMessage = await msg.channel.send(message);
+  return deleteAfterDelay(msg, sentMessage);
 };
 
 export const colour: Command = {
@@ -680,5 +734,5 @@ export const colour: Command = {
   description:
     'Manages roles for name colours. Get more info using "colour help".',
   fn: colourCommand,
-  aliases: ['color']
+  aliases: ['color'],
 };
