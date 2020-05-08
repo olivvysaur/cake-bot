@@ -38,13 +38,16 @@ const EMOJI_REGEX = /<a?:\w+:\d+>/g;
 
 const calculateEmojiStats: CommandFn = async (params, msg) => {
   const channels = msg.guild.channels
-    .filter(channel => channel.type === 'text')
-    .filter(channel => {
+    .filter((channel) => channel.type === 'text')
+    .filter((channel) => {
       const permissions = channel.permissionsFor(client.user);
       return permissions ? permissions.has('READ_MESSAGES') : false;
     });
 
   const numChannels = channels.size;
+
+  const serverEmojis = msg.guild.emojis;
+  const serverEmojiNames = serverEmojis.map((emoji) => emoji.toString());
 
   const embed = new RichEmbed();
   embed.title = 'Emoji stats';
@@ -59,28 +62,30 @@ const calculateEmojiStats: CommandFn = async (params, msg) => {
   const emojiCounts: { [name: string]: number } = {};
 
   await Promise.all(
-    channels.map(async channel => {
+    channels.map(async (channel) => {
       let fetchedMessages;
       let earliestMessage;
       do {
         fetchedMessages = await (channel as TextChannel).fetchMessages({
-          before: earliestMessage
+          before: earliestMessage,
         });
         if (!fetchedMessages || !fetchedMessages.size) {
           break;
         }
 
         fetchedMessages
-          .filter(message => !message.author.bot)
-          .forEach(message => {
+          .filter((message) => !message.author.bot)
+          .forEach((message) => {
             numMessages += 1;
             let match;
             do {
               match = EMOJI_REGEX.exec(message.content);
               if (match) {
                 const emoji = match[0];
-                const existingCount = emojiCounts[emoji] || 0;
-                emojiCounts[emoji] = existingCount + 1;
+                if (serverEmojiNames.includes(emoji)) {
+                  const existingCount = emojiCounts[emoji] || 0;
+                  emojiCounts[emoji] = existingCount + 1;
+                }
               }
             } while (match);
           });
@@ -90,10 +95,9 @@ const calculateEmojiStats: CommandFn = async (params, msg) => {
     })
   );
 
-  const serverEmojis = msg.guild.emojis;
-  const serverEmojiCounts = serverEmojis.map(emoji => ({
+  const serverEmojiCounts = serverEmojis.map((emoji) => ({
     key: emoji.toString(),
-    count: emojiCounts[emoji.toString()] || 0
+    count: emojiCounts[emoji.toString()] || 0,
   }));
 
   const ranking = serverEmojiCounts.sort((a, b) =>
@@ -102,13 +106,13 @@ const calculateEmojiStats: CommandFn = async (params, msg) => {
 
   const top = ranking
     .slice(0, 10)
-    .map(item => `${item.key} - ${pluralise(item.count, 'time')}`)
+    .map((item) => `${item.key} - ${pluralise(item.count, 'time')}`)
     .join('\n');
 
   const bottom = ranking
     .slice(-10)
     .reverse()
-    .map(item => `${item.key} - ${pluralise(item.count, 'time')}`)
+    .map((item) => `${item.key} - ${pluralise(item.count, 'time')}`)
     .join('\n');
 
   const resultsEmbed = new RichEmbed();
@@ -119,7 +123,7 @@ const calculateEmojiStats: CommandFn = async (params, msg) => {
     text: `Checked ${pluralise(numMessages, 'message')} in ${pluralise(
       numChannels,
       'channel'
-    )}`
+    )}`,
   };
   (resultMessage as Message).edit(resultsEmbed);
 
@@ -131,5 +135,5 @@ export const emoji: Command = {
   description: 'Displays a ranking of emojis used in the server.',
   params: [],
   fn: calculateEmojiStats,
-  requiresMod: true
+  requiresMod: true,
 };
