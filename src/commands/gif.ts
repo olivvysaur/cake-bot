@@ -19,7 +19,7 @@ const getGif: CommandFn = async (params, msg) => {
     const queryParams = {
       api_key: process.env.GIPHY_API_KEY,
       tag: '',
-      rating: 'PG-13'
+      rating: 'PG-13',
     };
     const query = querystring.stringify(queryParams);
     const url = `${GIPHY_RANDOM_URL}?${query}`;
@@ -38,7 +38,7 @@ const getGif: CommandFn = async (params, msg) => {
     const queryParams = {
       api_key: process.env.GIPHY_API_KEY,
       s: searchTerm,
-      rating: 'PG-13'
+      rating: 'PG-13',
     };
     const query = querystring.stringify(queryParams);
     const url = `${GIPHY_TRANSLATE_URL}?${query}`;
@@ -51,6 +51,12 @@ const getGif: CommandFn = async (params, msg) => {
       );
     }
 
+    if (!response.data.data?.images?.original?.url) {
+      return channel.send(
+        `${emoji.error} I didn't find any good GIFs for that search.`
+      );
+    }
+
     return channel.send(response.data.data.images.original.url);
   }
 };
@@ -58,5 +64,5 @@ const getGif: CommandFn = async (params, msg) => {
 export const gif: Command = {
   description: 'Finds a random gif based on a search term.',
   params: ['search_term'],
-  fn: getGif
+  fn: getGif,
 };
