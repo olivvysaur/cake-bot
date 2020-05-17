@@ -13,7 +13,7 @@ export const onMemberUpdate = async (
     onRolesUpdated(newUser, oldRoles.array(), newRoles.array());
   }
 
-  if (newNickname !== oldNickname) {
-    onNicknameUpdated(newUser, oldNickname, newNickname);
-  }
+  // if (newNickname !== oldNickname) {
+  //   onNicknameUpdated(newUser, oldNickname, newNickname);
+  // }
 };
