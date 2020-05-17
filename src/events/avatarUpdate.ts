@@ -56,6 +56,7 @@ export const onAvatarUpdated = async (user: User) => {
       newEmbed.title = existingEmbed.title;
       newEmbed.author = existingEmbed.author;
       newEmbed.timestamp = new Date(existingEmbed.timestamp);
+      newEmbed.footer = { text: existingEmbed.footer.text };
 
       newEmbed.thumbnail = { url: user.avatarURL };
 
