@@ -18,7 +18,7 @@ interface GameDetails {
 }
 
 const parseResponse = (response: any): GameDetails[] => {
-  const items = response.data.Catalog.catalogOffers.elements;
+  const items = response.data.Catalog.searchStore.elements;
   const parsedItems = items
     .filter(
       (item: any) =>
@@ -37,14 +37,15 @@ const parseResponse = (response: any): GameDetails[] => {
       url: `https://www.epicgames.com/store/en-US/product/${item.productSlug}`,
       startDate:
         item.promotions.promotionalOffers[0].promotionalOffers[0].startDate,
-      endDate: item.promotions.promotionalOffers[0].promotionalOffers[0].endDate
+      endDate:
+        item.promotions.promotionalOffers[0].promotionalOffers[0].endDate,
     }));
 
-  return _.uniqBy(parsedItems, item => item.name);
+  return _.uniqBy(parsedItems, (item) => item.name);
 };
 
 const buildAnnouncements = (games: any[]) =>
-  games.map(game => {
+  games.map((game) => {
     const embed = new RichEmbed();
     embed.title = `${game.name} is free on Epic`;
     embed.description = `Available until ${moment(game.endDate).format(
@@ -60,7 +61,7 @@ export const getFreeEpicGames = async () => {
       EPIC_API_URL,
       { query: GRAPHQL_QUERY, variables: {} },
       {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       }
     );
 
@@ -80,12 +81,12 @@ export const announceFreeEpicGames = async () => {
 
   const currentGames = await DB.getArrayAtPath('epicGames/currentGames');
   const gamesToAnnounce = games.filter(
-    game => !currentGames.includes(game.name)
+    (game) => !currentGames.includes(game.name)
   );
 
   if (gamesToAnnounce.length > 0) {
     await DB.deletePath('epicGames/currentGames');
-    games.forEach(game => DB.pushAtPath('epicGames/currentGames', game.name));
+    games.forEach((game) => DB.pushAtPath('epicGames/currentGames', game.name));
     console.log(
       `[epicgames] ${pluralise(gamesToAnnounce.length, 'game')} to announce.`
     );
@@ -102,11 +103,11 @@ export const announceFreeEpicGames = async () => {
     return;
   }
 
-  Object.keys(servers).forEach(serverId => {
+  Object.keys(servers).forEach((serverId) => {
     const channelId = servers[serverId];
     const channel = client.channels.get(channelId) as TextChannel;
     if (channel) {
-      announcements.forEach(announcement => channel.send(announcement));
+      announcements.forEach((announcement) => channel.send(announcement));
     }
   });
 
