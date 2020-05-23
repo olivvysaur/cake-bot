@@ -26,12 +26,15 @@ const editMessage: CommandFn = async (params, msg) => {
           if (message) {
             if (message.author.id === client.user.id) {
               success = true;
-              await textChannel.send(`
-Editing message ${messageId}. Here is the existing content, in case you need to copy and paste:
-\`\`\`
+              await textChannel.send(
+                'Here is the existing content, in case you need to copy and paste:'
+              );
+              await textChannel.send(`\`\`\`
 ${message.content}
-\`\`\`
-Now what should the new content be? Reply with "cancel" to cancel.`);
+\`\`\``);
+              await textChannel.send(
+                'Now what should the new content be? Reply with "cancel" to cancel.'
+              );
 
               const messageFilter = (message: Message) =>
                 message.author.id === msg.author.id;
