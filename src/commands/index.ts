@@ -15,6 +15,7 @@ import { colour } from './colour';
 import { mod } from './mod';
 import { unmod } from './unmod';
 import { echo } from './echo';
+import { edit } from './edit';
 import { breadify } from './breadify';
 import { logging } from './logging';
 import { shortcut } from './shortcut';
@@ -46,6 +47,7 @@ export const COMMANDS: { [code: string]: Command } = {
   mod,
   unmod,
   echo,
+  edit,
   breadify,
   contrast,
   avatar,
@@ -55,11 +57,11 @@ export const COMMANDS: { [code: string]: Command } = {
   emoji,
   '8ball': eightBall,
   gif,
-  epicgames
+  epicgames,
 };
 
 export const findCommand = (name: string) => {
-  const foundName = Object.keys(COMMANDS).find(command => {
+  const foundName = Object.keys(COMMANDS).find((command) => {
     if (command === name) {
       return true;
     }
