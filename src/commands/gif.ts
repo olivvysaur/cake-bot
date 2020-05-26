@@ -74,7 +74,7 @@ const getGif: CommandFn = async (params, msg) => {
 
   if (!results.length) {
     return channel.send(
-      `${emoji.error} I'm having trouble finding GIFs at the moment.`
+      `${emoji.error} I couldn't find any good GIFs for that search.`
     );
   }
 
