@@ -5,7 +5,7 @@ import { Command, CommandFn } from '../interfaces';
 import { emoji } from '../emoji';
 import { random } from '../random';
 
-const RANDOM_URL = 'https://api.tenor.com/v1/random';
+const SEARCH_URL = 'https://api.tenor.com/v1/search';
 const TRENDING_URL = 'https://api.tenor.com/v1/trending';
 
 const baseParams = {
@@ -13,7 +13,6 @@ const baseParams = {
   locale: 'en_US',
   media_filter: 'minimal',
   contentfilter: 'low',
-  limit: 50,
 };
 
 const getGif: CommandFn = async (params, msg) => {
@@ -27,6 +26,7 @@ const getGif: CommandFn = async (params, msg) => {
   if (params.length === 0) {
     const queryParams = {
       ...baseParams,
+      limit: 50,
     };
 
     const query = querystring.stringify(queryParams);
@@ -57,10 +57,11 @@ const getGif: CommandFn = async (params, msg) => {
   const queryParams = {
     ...baseParams,
     q: searchTerm,
+    limit: 20,
   };
 
   const query = querystring.stringify(queryParams);
-  const url = `${RANDOM_URL}?${query}`;
+  const url = `${SEARCH_URL}?${query}`;
 
   const response = await axios.get(url);
   if (response.status !== 200) {
