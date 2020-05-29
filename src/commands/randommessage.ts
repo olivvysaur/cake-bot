@@ -24,7 +24,7 @@ const getRandomMessage: CommandFn = async (params, msg) => {
     );
   }
 
-  const messageIDs: string[] = [];
+  let messageIDs: string[] = [];
 
   let fetchedMessages;
   let earliestMessage;
@@ -33,14 +33,17 @@ const getRandomMessage: CommandFn = async (params, msg) => {
     if (!fetchedMessages || !fetchedMessages.size) {
       break;
     }
-    messageIDs.concat(fetchedMessages.map((message) => message.id));
+    messageIDs = messageIDs.concat(
+      fetchedMessages.map((message) => message.id)
+    );
+    earliestMessage = fetchedMessages.last().id;
   } while (fetchedMessages && fetchedMessages.size);
 
   const chosenIndex = random(messageIDs.length);
   const chosenMessage = await channel.fetchMessage(messageIDs[chosenIndex]);
 
   const embed = chosenMessage.embeds[0];
-  const newEmbed = new RichEmbed(embed);
+  const newEmbed = embed ? new RichEmbed(embed) : undefined;
 
   return msg.channel.send(chosenMessage.content, newEmbed);
 };
