@@ -9,7 +9,7 @@ interface AvatarUpdateRecord {
   logMessage?: Message;
 }
 
-const BATCH_THRESHOLD = 1000 * 60 * 15;
+const BATCH_THRESHOLD = 1000 * 60 * 30;
 
 export const onAvatarUpdated = async (user: User) => {
   const userId = user.id;
