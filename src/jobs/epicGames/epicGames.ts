@@ -72,17 +72,17 @@ export const getFreeEpicGames = async () => {
   }
 };
 
-export const announceFreeEpicGames = async () => {
+export const announceFreeEpicGames = async (force: boolean = false) => {
   const games = await getFreeEpicGames();
   if (!games) {
     console.error('[epicgames] Failed to fetch free games from Epic.');
-    return;
+    return -1;
   }
 
   const currentGames = await DB.getArrayAtPath('epicGames/currentGames');
-  const gamesToAnnounce = games.filter(
-    (game) => !currentGames.includes(game.name)
-  );
+  const gamesToAnnounce = force
+    ? games
+    : games.filter((game) => !currentGames.includes(game.name));
 
   if (gamesToAnnounce.length > 0) {
     await DB.deletePath('epicGames/currentGames');
@@ -92,7 +92,7 @@ export const announceFreeEpicGames = async () => {
     );
   } else {
     console.log('[epicgames] No new games to announce.');
-    return;
+    return 0;
   }
 
   const announcements = buildAnnouncements(gamesToAnnounce);
@@ -100,7 +100,7 @@ export const announceFreeEpicGames = async () => {
   const servers = await DB.getPath('epicGames/servers');
   if (!servers) {
     console.error('[epicgames] No servers set up to receive announcements.');
-    return;
+    return -1;
   }
 
   Object.keys(servers).forEach((serverId) => {
@@ -117,4 +117,5 @@ export const announceFreeEpicGames = async () => {
       'server'
     )}.`
   );
+  return gamesToAnnounce.length;
 };
