@@ -31,9 +31,9 @@ const parseResponse = (response: any): GameDetails[] => {
     )
     .map((item: any) => ({
       name: item.title,
-      image: item.keyImages.find(
-        (image: any) => image.type === 'DieselStoreFrontTall'
-      ).url,
+      image: item.keyImages
+        .find((image: any) => image.type === 'DieselStoreFrontTall')
+        .url.replace(/ /g, '%20'),
       url: `https://www.epicgames.com/store/en-US/product/${item.productSlug}`,
       startDate:
         item.promotions.promotionalOffers[0].promotionalOffers[0].startDate,
