@@ -103,11 +103,14 @@ client.on('guildMemberRemove', async (member) => {
     const targetUser = entry.target as User;
     if (targetUser.id === userId) {
       const executor = entry.executor;
+      const customFields = [
+        { name: 'Reason', value: entry.reason || 'No reason given' },
+      ];
       Log.red(
         'Member kicked',
         `${targetUser} was kicked by ${executor}.`,
         serverId,
-        { author: targetUser }
+        { author: targetUser, customFields }
       );
     }
   }
