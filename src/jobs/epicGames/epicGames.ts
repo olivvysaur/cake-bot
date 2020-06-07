@@ -72,7 +72,17 @@ export const getFreeEpicGames = async () => {
   }
 };
 
-export const announceFreeEpicGames = async (force: boolean = false) => {
+interface EpicAnnouncementOptions {
+  force?: boolean;
+}
+
+export const announceFreeEpicGames = async (
+  options: EpicAnnouncementOptions = {}
+) => {
+  const force = !!options.force;
+
+  console.log(`\n[epicgames] Fetching games`);
+
   const games = await getFreeEpicGames();
   if (!games) {
     console.error('[epicgames] Failed to fetch free games from Epic.');
@@ -80,9 +90,21 @@ export const announceFreeEpicGames = async (force: boolean = false) => {
   }
 
   const currentGames = await DB.getArrayAtPath('epicGames/currentGames');
+  console.log(
+    `[epicgames] Previously announced games: ${currentGames.join(', ')}`
+  );
+  console.log(
+    `[epicgames] Currently free games: ${games.map((g) => g.name).join(', ')}`
+  );
   const gamesToAnnounce = force
     ? games
     : games.filter((game) => !currentGames.includes(game.name));
+
+  if (force) {
+    console.log(
+      '[epicgames] Forcing announcement due to use of "force" argument.'
+    );
+  }
 
   if (gamesToAnnounce.length > 0) {
     await DB.deletePath('epicGames/currentGames');

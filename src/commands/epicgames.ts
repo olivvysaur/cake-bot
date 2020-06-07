@@ -7,7 +7,7 @@ import { pluralise } from '../strings';
 const makeAnnouncement: CommandFn = async (params, msg) => {
   const force = !!(params[0]?.toLowerCase() === 'force');
 
-  const result = await announceFreeEpicGames(force);
+  const result = await announceFreeEpicGames({ force });
 
   const resultMessage =
     result === -1
