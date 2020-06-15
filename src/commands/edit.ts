@@ -26,19 +26,19 @@ const editMessage: CommandFn = async (params, msg) => {
           if (message) {
             if (message.author.id === client.user.id) {
               success = true;
-              await textChannel.send(
+              await msg.channel.send(
                 'Here is the existing content, in case you need to copy and paste:'
               );
-              await textChannel.send(`\`\`\`
+              await msg.channel.send(`\`\`\`
 ${message.content}
 \`\`\``);
-              await textChannel.send(
+              await msg.channel.send(
                 'Now what should the new content be? Reply with "cancel" to cancel.'
               );
 
               const messageFilter = (message: Message) =>
                 message.author.id === msg.author.id;
-              const response = await textChannel.awaitMessages(messageFilter, {
+              const response = await msg.channel.awaitMessages(messageFilter, {
                 time: 60000,
                 maxMatches: 1,
               });
@@ -48,7 +48,7 @@ ${message.content}
                 response.first().content.toLowerCase() === 'cancel'
               ) {
                 cancelled = true;
-                return textChannel.send(`${emoji.error} Edit cancelled.`);
+                return msg.channel.send(`${emoji.error} Edit cancelled.`);
               }
 
               const newContent = response.first().content;
