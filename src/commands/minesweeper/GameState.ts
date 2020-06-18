@@ -214,7 +214,7 @@ export const flagSquare = (
         allFlagged = false;
       }
       if (state.board[i][j] !== MINE && state.flagged[i][j]) {
-        allFlagged = true;
+        allFlagged = false;
       }
     });
   });
