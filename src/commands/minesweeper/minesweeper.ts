@@ -132,6 +132,7 @@ const playMinesweeper: CommandFn = async (params, msg) => {
   const timeSpentAsString = `${timeSpent.minutes()}m ${timeSpent.seconds()}s`;
 
   gameEmbed.title = state.completed ? 'Winner!' : 'Game over';
+  gameEmbed.setColor(state.completed ? '#408137' : '#d64834');
   gameEmbed.addField('Time spent', timeSpentAsString, true);
   gameEmbed.addField('Moves made', moveCount, true);
 
