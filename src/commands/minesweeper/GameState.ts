@@ -174,8 +174,6 @@ export const revealSquare = (
         }
       });
     });
-    newState.cursorX = -1;
-    newState.cursorY = -1;
     newState.gameOver = true;
   }
 

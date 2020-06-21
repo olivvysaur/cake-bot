@@ -8,31 +8,33 @@ import {
   flagSquare,
 } from './GameState';
 import { range } from './utils';
-import { HEIGHT, WIDTH, FLAG, COVERED } from './constants';
-import { RichEmbed, Message, CollectorFilter } from 'discord.js';
+import { HEIGHT, WIDTH, FLAG, COVERED, MINES } from './constants';
+import { Message, CollectorFilter } from 'discord.js';
 
 const TWO_MINUTES = 1000 * 60 * 2;
 
 const drawBoard = (state: GameState) => {
   let grid = '';
 
+  let flagsUsed = 0;
+  range(0, WIDTH).forEach((x) =>
+    range(0, HEIGHT).forEach((y) => {
+      if (state.flagged[x][y]) {
+        flagsUsed += 1;
+      }
+    })
+  );
+
+  grid = `🚩 ${Math.max(MINES - flagsUsed, 0)}\n`;
+
   range(0, HEIGHT + 1).forEach((y) => {
-    range(0, WIDTH).forEach((x) => {
-      const isCursor = state.cursorX === x && state.cursorY === y;
-      const isBelowCursor = state.cursorX === x && state.cursorY === y - 1;
-
-      grid += isCursor ? '┌' : isBelowCursor ? '└' : ' ';
-      grid += isCursor || isBelowCursor ? '─' : ' ';
-      grid += isCursor ? '┐' : isBelowCursor ? '┘' : ' ';
-    });
-
     grid += '\n';
 
     if (y < HEIGHT) {
       range(0, WIDTH).forEach((x) => {
         const isCursor = state.cursorX === x && state.cursorY === y;
 
-        grid += isCursor ? '│' : ' ';
+        grid += isCursor ? '{' : '  ';
 
         if (state.flagged[x][y]) {
           grid += FLAG;
@@ -42,14 +44,16 @@ const drawBoard = (state: GameState) => {
           grid += state.board[x][y];
         }
 
-        grid += isCursor ? '│' : ' ';
+        grid += isCursor ? '}' : '  ';
       });
 
       grid += '\n';
     }
   });
 
-  return `\`\`\`\n${grid}\n\`\`\``;
+  grid += '.';
+
+  return grid;
 };
 
 const playMinesweeper: CommandFn = async (params, msg) => {
