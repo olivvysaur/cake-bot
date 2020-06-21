@@ -8,24 +8,14 @@ import {
   flagSquare,
 } from './GameState';
 import { range } from './utils';
-import { HEIGHT, WIDTH, FLAG, COVERED, MINES } from './constants';
-import { Message, CollectorFilter } from 'discord.js';
+import { HEIGHT, WIDTH, FLAG, COVERED, MINES, MINE } from './constants';
+import { Message, CollectorFilter, RichEmbed } from 'discord.js';
+import moment from 'moment';
 
 const TWO_MINUTES = 1000 * 60 * 2;
 
 const drawBoard = (state: GameState) => {
   let grid = '';
-
-  let flagsUsed = 0;
-  range(0, WIDTH).forEach((x) =>
-    range(0, HEIGHT).forEach((y) => {
-      if (state.flagged[x][y]) {
-        flagsUsed += 1;
-      }
-    })
-  );
-
-  grid = `🚩 ${Math.max(MINES - flagsUsed, 0)}\n`;
 
   range(0, HEIGHT + 1).forEach((y) => {
     grid += '\n';
@@ -34,7 +24,7 @@ const drawBoard = (state: GameState) => {
       range(0, WIDTH).forEach((x) => {
         const isCursor = state.cursorX === x && state.cursorY === y;
 
-        grid += isCursor ? '{' : '  ';
+        grid += isCursor ? '{' : '\u200B\u00A0\u00A0';
 
         if (state.flagged[x][y]) {
           grid += FLAG;
@@ -44,14 +34,12 @@ const drawBoard = (state: GameState) => {
           grid += state.board[x][y];
         }
 
-        grid += isCursor ? '}' : '  ';
+        grid += isCursor ? '}' : '\u00A0\u00A0';
       });
 
       grid += '\n';
     }
   });
-
-  grid += '.';
 
   return grid;
 };
@@ -59,10 +47,17 @@ const drawBoard = (state: GameState) => {
 const playMinesweeper: CommandFn = async (params, msg) => {
   const playerId = msg.author.id;
 
+  const startTime = moment();
+  let moveCount = 0;
   let state = createGameState();
 
   const board = drawBoard(state);
-  const gameMsg = (await msg.channel.send(board)) as Message;
+
+  const gameEmbed = new RichEmbed();
+  gameEmbed.title = `🚩 ${MINES}`;
+  gameEmbed.description = board;
+
+  const gameMsg = (await msg.channel.send(gameEmbed)) as Message;
 
   await gameMsg.react('◀️');
   await gameMsg.react('🔼');
@@ -84,6 +79,8 @@ const playMinesweeper: CommandFn = async (params, msg) => {
     });
 
     if (!!reactions && !!reactions.size) {
+      moveCount += 1;
+
       const command = reactions.first().emoji.name;
       if (command === '◀️') {
         state = move(state, Direction.Left);
@@ -109,12 +106,36 @@ const playMinesweeper: CommandFn = async (params, msg) => {
     }
 
     const updatedBoard = drawBoard(state);
-    await gameMsg.edit(updatedBoard);
+
+    let flagsUsed = 0;
+    range(0, WIDTH).forEach((x) =>
+      range(0, HEIGHT).forEach((y) => {
+        if (state.flagged[x][y]) {
+          flagsUsed += 1;
+        }
+      })
+    );
+    const flagCount = `🚩 ${Math.max(MINES - flagsUsed, 0)}`;
+
+    gameEmbed.title = flagCount;
+    gameEmbed.description = updatedBoard;
+
+    await gameMsg.edit(gameEmbed);
 
     finished = finished || state.completed || state.gameOver;
   }
 
   await gameMsg.clearReactions();
+
+  const endTime = moment();
+  const timeSpent = moment.duration(endTime.diff(startTime));
+  const timeSpentAsString = `${timeSpent.minutes()}m ${timeSpent.seconds()}s`;
+
+  gameEmbed.title = state.completed ? 'Winner!' : 'Game over';
+  gameEmbed.addField('Time spent', timeSpentAsString, true);
+  gameEmbed.addField('Moves made', moveCount, true);
+
+  await gameMsg.edit(gameEmbed);
 };
 
 export const minesweeper: Command = {
