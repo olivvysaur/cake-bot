@@ -1,8 +1,8 @@
-import { WIDTH, HEIGHT, MINES, MINE, NUMBERS } from './constants';
+import { WIDTH, HEIGHT, MINE, NUMBERS } from './constants';
 import { range, randomSquare, neighbours } from './utils';
-import { max } from 'lodash';
 
 export interface GameState {
+  mines: number;
   board: string[][];
   revealed: boolean[][];
   flagged: boolean[][];
@@ -20,7 +20,7 @@ export enum Direction {
   Right,
 }
 
-export const createGameState = (): GameState => {
+export const createGameState = (mines: number): GameState => {
   const board: string[][] = [];
   const revealed: boolean[][] = [];
   const flagged: boolean[][] = [];
@@ -36,7 +36,7 @@ export const createGameState = (): GameState => {
   });
 
   let mineCount = 0;
-  while (mineCount < MINES) {
+  while (mineCount < mines) {
     const [x, y] = randomSquare();
     if (board[x][y] === '') {
       board[x][y] = MINE;
@@ -59,6 +59,7 @@ export const createGameState = (): GameState => {
   });
 
   return {
+    mines,
     board,
     revealed,
     flagged,
@@ -146,7 +147,7 @@ export const revealSquare = (
   newState.firstTileRevealed = true;
 
   if (value === MINE) {
-    if (!state.firstTileRevealed) {
+    if (!state.firstTileRevealed && state.mines !== WIDTH * HEIGHT) {
       let minePlaced = false;
       let newX = 0;
       let newY = 0;

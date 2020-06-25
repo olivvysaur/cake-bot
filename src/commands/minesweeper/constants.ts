@@ -1,6 +1,6 @@
 export const WIDTH = 8;
 export const HEIGHT = 8;
-export const MINES = 8;
+export const DEFAULT_MINES = 8;
 
 export const COVERED = '<:c:724256678555418634>';
 export const MINE = '<:m:724256678253559830>';

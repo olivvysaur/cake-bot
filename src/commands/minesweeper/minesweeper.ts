@@ -8,7 +8,7 @@ import {
   flagSquare,
 } from './GameState';
 import { range } from './utils';
-import { HEIGHT, WIDTH, FLAG, COVERED, MINES, MINE } from './constants';
+import { HEIGHT, WIDTH, FLAG, COVERED, DEFAULT_MINES } from './constants';
 import { Message, CollectorFilter, RichEmbed } from 'discord.js';
 import moment from 'moment';
 
@@ -47,14 +47,20 @@ const drawBoard = (state: GameState) => {
 const playMinesweeper: CommandFn = async (params, msg) => {
   const playerId = msg.author.id;
 
+  const minesParam = Number(params[0]);
+  const mines =
+    isNaN(minesParam) || minesParam === 0
+      ? DEFAULT_MINES
+      : Math.min(minesParam, WIDTH * HEIGHT);
+
   const startTime = moment();
   let moveCount = 0;
-  let state = createGameState();
+  let state = createGameState(mines);
 
   const board = drawBoard(state);
 
   const gameEmbed = new RichEmbed();
-  gameEmbed.title = `🚩 ${MINES}`;
+  gameEmbed.title = `🚩 ${mines}`;
   gameEmbed.description = board;
 
   const gameMsg = (await msg.channel.send(gameEmbed)) as Message;
@@ -115,7 +121,7 @@ const playMinesweeper: CommandFn = async (params, msg) => {
         }
       })
     );
-    const flagCount = `🚩 ${Math.max(MINES - flagsUsed, 0)}`;
+    const flagCount = `🚩 ${Math.max(mines - flagsUsed, 0)}`;
 
     gameEmbed.title = flagCount;
     gameEmbed.description = updatedBoard;
