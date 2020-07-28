@@ -1,11 +1,14 @@
 import { GuildMember } from 'discord.js';
 import { Log } from '../logging';
+import { updateList } from '../updateList';
 
 export const onNicknameUpdated = (
   user: GuildMember,
   oldNickname: string,
   newNickname: string
 ) => {
+  updateList(user.guild.id);
+
   if (!oldNickname) {
     const field = {
       name: 'Added',

@@ -5,8 +5,9 @@ import {
   getServers,
   getBirthdays,
   getNextAnnouncementDate,
-  setNextAnnouncementDate
+  setNextAnnouncementDate,
 } from './database';
+import { updateList } from './updateList';
 import { getUsername } from './users';
 import { client } from '.';
 
@@ -14,8 +15,10 @@ export const announceBirthdays = async () => {
   const { month, day } = await getNextAnnouncementDate();
 
   const servers = await getServers();
-  Object.keys(servers).forEach(async serverId => {
+  Object.keys(servers).forEach(async (serverId) => {
     const { channel: channelId } = servers[serverId];
+
+    await updateList(serverId);
 
     if (!channelId) {
       return;
@@ -58,9 +61,6 @@ Happy birthday to ${list}!
     channel.send(message);
   });
 
-  const announcementDate = moment()
-    .month(month)
-    .date(day)
-    .add(1, 'day');
+  const announcementDate = moment().month(month).date(day).add(1, 'day');
   setNextAnnouncementDate(announcementDate);
 };
