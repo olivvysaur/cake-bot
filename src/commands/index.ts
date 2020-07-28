@@ -29,6 +29,7 @@ import { eightBall } from './8ball';
 import { gif } from './gif';
 import { epicgames } from './epicgames';
 import { minesweeper } from './minesweeper';
+import { autopurge } from './autopurge';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -60,6 +61,7 @@ export const COMMANDS: { [code: string]: Command } = {
   gif,
   epicgames,
   minesweeper,
+  autopurge,
 };
 
 export const findCommand = (name: string) => {

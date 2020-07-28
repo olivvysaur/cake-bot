@@ -17,6 +17,7 @@ import { time } from './times';
 import { scheduleRecurringCallback } from './schedule';
 import { onUserUpdate } from './events/userUpdate';
 import { onMessageReceived } from './events/messageReceived';
+import { autoPurge } from './jobs/autoPurge';
 
 loadEnv();
 
@@ -56,6 +57,13 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
   loadEmoji();
+
+  scheduleRecurringCallback({
+    callback: autoPurge,
+    hour: 0,
+    minute: 0,
+    name: 'Auto purge',
+  });
 
   scheduleRecurringCallback({
     callback: announceBirthdays,
