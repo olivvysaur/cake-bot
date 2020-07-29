@@ -4,6 +4,7 @@ import { DB } from '../database';
 import { client } from '..';
 import moment from 'moment';
 import { pluralise } from '../strings';
+import { Log } from '../logging';
 
 const getMessagesToPurge = async (channel: TextChannel, minAge: number) => {
   const threshold = moment().subtract(minAge, 'days');
@@ -39,39 +40,61 @@ const getMessagesToPurge = async (channel: TextChannel, minAge: number) => {
 };
 
 export const autoPurge = async () => {
-  const configs = await DB.getPath('autoPurge');
-  Object.keys(configs).forEach(async (channelId) => {
-    const channel = client.channels.get(channelId);
-    const minAge = configs[channelId];
+  const servers = await DB.getPath('autoPurge');
 
-    if (!channel) {
-      console.log(
-        `[autopurge] Auto purge failed for missing channel ${channelId}`
-      );
-      return;
-    }
+  Object.keys(servers).forEach(async (serverId) => {
+    const results: { [name: string]: number } = {};
 
-    const textChannel = channel as TextChannel;
-
-    const messagesToPurge = await getMessagesToPurge(textChannel, minAge);
-
-    console.log(
-      `[autopurge] Found ${pluralise(
-        messagesToPurge.length,
-        'message'
-      )} to purge in channel ${channelId}`
-    );
-
-    if (messagesToPurge.length === 0) {
-      return;
-    }
-
+    const configs = servers[serverId];
     await Promise.all(
-      messagesToPurge.map(async (message) => {
-        await message.delete();
+      Object.keys(configs).map(async (channelId) => {
+        const channel = client.channels.get(channelId);
+        const minAge = configs[channelId];
+
+        if (!channel) {
+          console.log(
+            `[autopurge] Auto purge failed for missing channel ${channelId}`
+          );
+          return;
+        }
+
+        const textChannel = channel as TextChannel;
+
+        const messagesToPurge = await getMessagesToPurge(textChannel, minAge);
+
+        console.log(
+          `[autopurge] Found ${pluralise(
+            messagesToPurge.length,
+            'message'
+          )} to purge in channel ${channelId}`
+        );
+
+        if (messagesToPurge.length === 0) {
+          return;
+        }
+
+        await Promise.all(
+          messagesToPurge.map(async (message) => {
+            await message.delete();
+          })
+        );
+
+        console.log(`[autopurge] Purged messages in channel ${channelId}`);
+        results[textChannel.name] = messagesToPurge.length;
       })
     );
 
-    console.log(`[autopurge] Purged messages in channel ${channelId}`);
+    const resultsMessage = Object.keys(results)
+      .map(
+        (channelName) =>
+          `#${channelName}: ${pluralise(results[channelName], 'message')}`
+      )
+      .join('\n');
+
+    if (resultsMessage.length === 0) {
+      return;
+    }
+
+    Log.red('Auto purge complete', resultsMessage, serverId);
   });
 };

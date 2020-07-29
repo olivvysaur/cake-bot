@@ -7,6 +7,8 @@ import { DB } from '../database';
 import { pluralise } from '../strings';
 
 const configureAutoPurge: CommandFn = async (params, msg) => {
+  const serverId = msg.guild.id;
+
   if (params.length < 2) {
     return msg.channel.send(
       `${emoji.error} I need to know which channel to configure auto purge for and how to configure it.`
@@ -27,7 +29,7 @@ const configureAutoPurge: CommandFn = async (params, msg) => {
   }
 
   if (params[1] === 'disable') {
-    await DB.deletePath(`autoPurge/${channelId}`);
+    await DB.deletePath(`autoPurge/${serverId}/${channelId}`);
     return msg.channel.send(
       `${emoji.success} Auto purge disabled for ${channel}.`
     );
@@ -40,7 +42,7 @@ const configureAutoPurge: CommandFn = async (params, msg) => {
     );
   }
 
-  await DB.setPath(`autoPurge/${channelId}`, minAge);
+  await DB.setPath(`autoPurge/${serverId}/${channelId}`, minAge);
   return msg.channel.send(
     `${emoji.success} Messages older than ${pluralise(
       minAge,
