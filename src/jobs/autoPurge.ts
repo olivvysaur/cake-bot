@@ -75,7 +75,13 @@ export const autoPurge = async () => {
 
         await Promise.all(
           messagesToPurge.map(async (message) => {
-            await message.delete();
+            try {
+              await message.delete();
+            } catch (err) {
+              console.error(
+                `[autopurge] Failed to delete message ${message.id} due to error: ${err}`
+              );
+            }
           })
         );
 
