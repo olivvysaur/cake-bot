@@ -4,6 +4,7 @@ import { Command, CommandFn } from '../interfaces';
 import { findUser } from '../users';
 import { timeSince } from '../dates';
 import { emoji } from '../emoji';
+import moment from 'moment';
 
 const getUserInfo: CommandFn = async (params, msg) => {
   const serverId = msg.guild.id;
@@ -22,8 +23,10 @@ const getUserInfo: CommandFn = async (params, msg) => {
     joinedAt,
     colorRole,
     roles,
-    user: { avatarURL, bot, tag, id }
+    user: { avatarURL, tag, id },
   } = user;
+
+  const joinDate = moment(joinedAt).format('LL');
 
   const timeSinceJoining = timeSince(joinedAt);
   const shortTimeSinceJoining = timeSinceJoining.asString
@@ -33,7 +36,7 @@ const getUserInfo: CommandFn = async (params, msg) => {
 
   const rolesList = roles
     .array()
-    .filter(role => role.name !== '@everyone')
+    .filter((role) => role.name !== '@everyone')
     .sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1))
     .join(' ');
 
@@ -44,9 +47,9 @@ const getUserInfo: CommandFn = async (params, msg) => {
   embed.addField('Display name', user, true);
   embed.addField('Discord tag', tag, true);
   embed.addField('User ID', id, true);
-  embed.addField('Bot', bot ? 'Yes' : 'No', true);
   embed.addField('Colour', colorRole || 'None', true);
   embed.addField('Member for', shortTimeSinceJoining, true);
+  embed.addField('Joined', joinDate, true);
   embed.addField('Roles', !!rolesList.length ? rolesList : 'None', false);
 
   msg.channel.send(embed);
@@ -56,5 +59,5 @@ export const user: Command = {
   params: ['name'],
   description: 'Get information about a person, e.g. "user valentine".',
   fn: getUserInfo,
-  hidden: true
+  hidden: true,
 };
