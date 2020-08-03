@@ -25,10 +25,6 @@ export const setupNotification = async (
   const { skipErrors = false } = options || {};
 
   if (!foundUser) {
-    if (skipErrors) {
-      return;
-    }
-
     const sentMessage = await msg.channel.send(
       `${emoji.error} I can't find a user named "${usernameQuery}".`
     );
@@ -39,7 +35,7 @@ export const setupNotification = async (
   const receiverId = foundUser.id;
   const receiverName = foundUser.displayName;
   const senderId = msg.member.user.id;
-  const senderName = msg.member.displayName;
+  const channelId = msg.channel.id;
   const link = msg.url;
 
   if (receiverId === senderId) {
@@ -71,7 +67,7 @@ export const setupNotification = async (
     return;
   }
 
-  await addOnlineNotification(receiverId, senderId, link, senderName);
+  await addOnlineNotification(receiverId, senderId, link, serverId, channelId);
 
   const cancelEmoji = emoji.CancelPing;
   if (cancelEmoji) {

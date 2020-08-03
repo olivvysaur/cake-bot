@@ -14,18 +14,18 @@ const firebaseConfig = [
   'auth_uri',
   'token_uri',
   'auth_provider_x509_cert_url',
-  'client_x509_cert_url'
+  'client_x509_cert_url',
 ].reduce(
   (config, key) => ({
     ...config,
-    [key]: process.env[`FIREBASE_${key.toUpperCase()}`]
+    [key]: process.env[`FIREBASE_${key.toUpperCase()}`],
   }),
   {}
 );
 
 admin.initializeApp({
   credential: admin.credential.cert(firebaseConfig),
-  databaseURL: process.env.FIREBASE_DATABASE_URL
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
 
 const db = admin.database();
@@ -53,7 +53,7 @@ export class DB {
       return [];
     }
 
-    return Object.keys(value).map(key => value[key]);
+    return Object.keys(value).map((key) => value[key]);
   };
 
   static deletePath = async (path: string) => {
@@ -76,25 +76,16 @@ export const addServer = (server: string) => {
   const defaultData = {
     channel: null,
     listMessage: null,
-    mentions: false
+    mentions: false,
   };
 
-  ref
-    .child('servers')
-    .child(server)
-    .set(defaultData);
+  ref.child('servers').child(server).set(defaultData);
 };
 
 export const removeServer = (server: string) => {
-  ref
-    .child('servers')
-    .child(server)
-    .remove();
+  ref.child('servers').child(server).remove();
 
-  ref
-    .child('birthdays')
-    .child(server)
-    .remove();
+  ref.child('birthdays').child(server).remove();
 };
 
 export const getServers = async () => {
@@ -110,19 +101,11 @@ export const setBirthday = async (
   const month = date.month();
   const day = date.date();
 
-  await ref
-    .child('birthdays')
-    .child(server)
-    .child(user)
-    .set({ month, day });
+  await ref.child('birthdays').child(server).child(user).set({ month, day });
 };
 
 export const removeBirthday = async (server: string, user: string) => {
-  await ref
-    .child('birthdays')
-    .child(server)
-    .child(user)
-    .remove();
+  await ref.child('birthdays').child(server).child(user).remove();
 };
 
 export const getBirthdays = async (
@@ -151,8 +134,8 @@ export const getBirthdays = async (
       ...result,
       [month]: {
         ...result[month],
-        [day]: currentDay
-      }
+        [day]: currentDay,
+      },
     };
   }, {});
 
@@ -168,11 +151,7 @@ export const getBirthdays = async (
 };
 
 export const setServerChannel = (server: string, channel: string) => {
-  ref
-    .child('servers')
-    .child(server)
-    .child('channel')
-    .set(channel);
+  ref.child('servers').child(server).child('channel').set(channel);
 };
 
 export const getServerChannel = async (server: string) => {
@@ -185,11 +164,7 @@ export const getServerChannel = async (server: string) => {
 };
 
 export const setServerListMessage = (server: string, msgId: string) => {
-  ref
-    .child('servers')
-    .child(server)
-    .child('listMessage')
-    .set(msgId);
+  ref.child('servers').child(server).child('listMessage').set(msgId);
 };
 
 export const getServerListMessage = async (server: string) => {
@@ -202,11 +177,7 @@ export const getServerListMessage = async (server: string) => {
 };
 
 export const setServerMentions = (server: string, mentions: boolean) => {
-  ref
-    .child('servers')
-    .child(server)
-    .child('mentions')
-    .set(mentions);
+  ref.child('servers').child(server).child('mentions').set(mentions);
 };
 
 export const getServerMentions = async (server: string) => {
@@ -222,13 +193,14 @@ export const addOnlineNotification = async (
   receiver: string,
   sender: string,
   url: string,
-  senderName: string
+  serverId: string,
+  channelId: string
 ) => {
   await ref
     .child('onlineNotifications')
     .child(receiver)
     .child(sender)
-    .set({ url, senderName });
+    .set({ url, serverId, channelId });
 };
 
 export const getOnlineNotifications = async (user: string) => {
@@ -252,8 +224,5 @@ export const getOnlineNotificationBetweenUsers = async (
 };
 
 export const deleteOnlineNotifications = async (user: string) => {
-  await ref
-    .child('onlineNotifications')
-    .child(user)
-    .remove();
+  await ref.child('onlineNotifications').child(user).remove();
 };

@@ -45,11 +45,25 @@ export const checkNotifications = async (userId: string) => {
 
   senders
     .map((senderId) => ({
-      senderName: notifications[senderId].senderName,
-      url: notifications[senderId].url,
+      senderId,
+      ...notifications[senderId],
     }))
-    .forEach((notification) => {
-      embed.addField(notification.senderName, notification.url);
+    .forEach(async (notification) => {
+      const { senderId, serverId, channelId, url } = notification;
+
+      const channel = client.channels.get(channelId) as TextChannel;
+      const channelName = channel?.name;
+
+      const server = client.guilds.get(serverId) || channel?.guild;
+      const serverName = server?.name;
+
+      const sender = await server?.fetchMember(senderId);
+      const senderName = sender?.displayName || 'Unknown user';
+
+      const channelPortion = channelName ? `, #${channelName}` : '';
+      const serverPortion = serverName ? ` (${serverName})` : '';
+
+      embed.addField(`${senderName}${channelPortion}${serverPortion}`, url);
     });
 
   const receiver = await client.fetchUser(userId);
