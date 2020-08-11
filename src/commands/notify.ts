@@ -22,11 +22,15 @@ export const setupNotification = async (
   const serverId = msg.guild.id;
   const foundUser = findUser(usernameQuery, serverId);
 
-  const { skipErrors = false } = options || {};
+  const { skipErrors } = options || {};
 
   if (!foundUser) {
+    if (skipErrors) {
+      return;
+    }
+
     const sentMessage = await msg.channel.send(
-      `${emoji.error} I can't find a user named "${usernameQuery}".`
+      `${emoji.error} I can't find a person named "${usernameQuery}".`
     );
     deleteAfterDelay(sentMessage);
     return;
