@@ -2,9 +2,10 @@ import { RichEmbed } from 'discord.js';
 
 import { Command, CommandFn } from '../interfaces';
 import { findUser } from '../users';
-import { timeSince } from '../dates';
+import { formatDate, timeSince } from '../dates';
 import { emoji } from '../emoji';
 import moment from 'moment';
+import { DB, getBirthdays } from '../database';
 
 const getUserInfo: CommandFn = async (params, msg) => {
   const serverId = msg.guild.id;
@@ -40,8 +41,15 @@ const getUserInfo: CommandFn = async (params, msg) => {
     .sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1))
     .join(' ');
 
+  let birthday = 'Unknown';
+  const birthdayData = await DB.getPath(`birthdays/${serverId}/${user.id}`);
+  if (birthdayData) {
+    const { month, day } = birthdayData;
+    const date = moment().month(month).date(day);
+    birthday = formatDate(date);
+  }
+
   const embed = new RichEmbed();
-  embed.title = `Info about user ${displayName}`;
   embed.author = { name: displayName, icon_url: avatarURL };
   embed.color = displayColor;
   embed.addField('Display name', user, true);
@@ -50,6 +58,7 @@ const getUserInfo: CommandFn = async (params, msg) => {
   embed.addField('Colour', colorRole || 'None', true);
   embed.addField('Member for', shortTimeSinceJoining, true);
   embed.addField('Joined', joinDate, true);
+  embed.addField('Birthday', birthday, true);
   embed.addField('Roles', !!rolesList.length ? rolesList : 'None', false);
 
   msg.channel.send(embed);
