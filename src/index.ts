@@ -1,23 +1,21 @@
 import Discord, { Message, User } from 'discord.js';
 import { config as loadEnv } from 'dotenv';
 
-import { COMMANDS, findCommand } from './commands';
+import { findCommand } from './commands';
 import { announceBirthdays } from './announce';
-import { addServer, removeServer, removeBirthday, DB } from './database';
+import { addServer, removeServer, DB } from './database';
 import { checkNotifications } from './checkNotifications';
-import { Log } from './logging';
-import { updateList } from './updateList';
 import { PREFIX } from './constants';
 import { checkShortcuts } from './checkShortcuts';
 import { cancelPing } from './commands/notify';
 import { loadEmoji } from './emoji';
 import { onMemberUpdate } from './events';
 import { announceFreeEpicGames } from './jobs/epicGames/epicGames';
-import { time } from './times';
 import { scheduleRecurringCallback } from './schedule';
 import { onUserUpdate } from './events/userUpdate';
 import { onMessageReceived } from './events/messageReceived';
 import { autoPurge } from './jobs/autoPurge';
+import { onMemberLeave } from './events/memberLeave';
 
 loadEnv();
 
@@ -99,47 +97,7 @@ client.on('userUpdate', (oldUser, newUser) => {
 });
 
 client.on('guildMemberRemove', async (member) => {
-  const serverId = member.guild.id;
-  const userId = member.id;
-
-  const auditLog = await member.guild.fetchAuditLogs({
-    type: 'MEMBER_KICK',
-    limit: 1,
-  });
-  const entry = auditLog.entries.first();
-  if (entry) {
-    const targetUser = entry.target as User;
-    if (targetUser.id === userId) {
-      const executor = entry.executor;
-      const customFields = [
-        { name: 'Reason', value: entry.reason || 'No reason given' },
-      ];
-      Log.red(
-        'Member kicked',
-        `${targetUser} was kicked by ${executor}.`,
-        serverId,
-        { author: targetUser, customFields }
-      );
-    }
-  }
-
-  const userBirthday = await DB.getPath(`birthdays/${serverId}/${userId}`);
-  if (!userBirthday) {
-    return;
-  }
-
-  console.log(
-    `User ${userId} has left server ${serverId}, removing their birthday.`
-  );
-  removeBirthday(serverId, userId);
-  updateList(serverId);
-
-  Log.red(
-    'Birthday removed',
-    'User left the server so their birthday was removed.',
-    serverId,
-    { user: member }
-  );
+  onMemberLeave(member);
 });
 
 client.on('message', async (msg) => {
