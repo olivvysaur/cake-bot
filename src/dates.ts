@@ -26,13 +26,13 @@ export const parseDate = (date: string) => {
       } else {
         return [
           moment(`${firstNumber}/${secondNumber}`, 'D/M'),
-          moment(`${secondNumber}/${firstNumber}`, 'M/D')
+          moment(`${secondNumber}/${firstNumber}`, 'D/M'),
         ];
       }
     } else if (firstNumber > 12 && secondNumber <= 12) {
       return moment(`${firstNumber}/${secondNumber}`, 'D/M');
     } else if (firstNumber <= 12 && secondNumber > 12) {
-      return moment(`${secondNumber}/${firstNumber}`, 'M/D');
+      return moment(`${secondNumber}/${firstNumber}`, 'D/M');
     } else {
       return null;
     }
@@ -58,7 +58,7 @@ export const timeSince = (date: Date) => {
     days: diff.days(),
     hours: diff.hours(),
     minutes: diff.minutes(),
-    seconds: diff.seconds()
+    seconds: diff.seconds(),
   };
 
   const pluralised = Object.entries(components).map(([key, value]) => {
@@ -67,13 +67,13 @@ export const timeSince = (date: Date) => {
   });
 
   const firstNonZeroIndex = Object.values(components).findIndex(
-    value => value !== 0
+    (value) => value !== 0
   );
 
   const asString = pluralised.slice(firstNonZeroIndex).join(', ');
 
   return {
     ...components,
-    asString
+    asString,
   };
 };
