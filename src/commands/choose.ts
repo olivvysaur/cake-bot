@@ -4,7 +4,10 @@ import { Command, CommandFn } from '../interfaces';
 import { random } from '../random';
 
 const chooseItem: CommandFn = (params, msg) => {
-  const items = params.join(' ').split(' / ');
+  const items = params
+    .join(' ')
+    .split('/')
+    .map((item) => item.trim());
 
   if (items.length <= 1) {
     return msg.channel.send(
