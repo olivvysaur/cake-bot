@@ -30,6 +30,7 @@ import { gif } from './gif';
 import { epicgames } from './epicgames';
 import { minesweeper } from './minesweeper';
 import { autopurge } from './autopurge';
+import { choose } from './choose';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -54,6 +55,7 @@ export const COMMANDS: { [code: string]: Command } = {
   contrast,
   avatar,
   otter,
+  choose,
   logging,
   shortcut,
   emoji,
