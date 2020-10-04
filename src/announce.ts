@@ -54,7 +54,7 @@ export const announceBirthdays = async () => {
 
     const message = `🎂🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈🎂
 
-Happy birthday to ${list}!
+Happy birthday, ${list}!
 
 🎂🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈🎂`;
 
