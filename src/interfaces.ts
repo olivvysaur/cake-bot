@@ -11,6 +11,11 @@ export interface Command {
   requiresMod?: boolean;
 }
 
+export interface RegexCommand {
+  trigger: RegExp;
+  fn: (msg: Discord.Message) => void;
+}
+
 export interface Shortcut {
   trigger: string;
   command: string;

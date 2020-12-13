@@ -16,6 +16,7 @@ import { onUserUpdate } from './events/userUpdate';
 import { onMessageReceived } from './events/messageReceived';
 import { autoPurge } from './jobs/autoPurge';
 import { onMemberLeave } from './events/memberLeave';
+import { runRegexCommands } from './regexCommands';
 
 loadEnv();
 
@@ -106,6 +107,7 @@ client.on('message', async (msg) => {
   }
 
   onMessageReceived(msg);
+  runRegexCommands(msg);
 
   if (
     !msg.isMentioned(client.user) &&
