@@ -6,13 +6,17 @@ import { DB } from '../database';
 const displayHelp: CommandFn = async (params, msg) => {
   const embed = new RichEmbed();
 
-  const userRoles = msg.member.roles;
-  const modRoles = await DB.getArrayAtPath(`modRoles/${msg.guild.id}`);
-  const isMod = !!modRoles.length
-    ? !!userRoles.find(role => modRoles.includes(role.id))
-    : true;
+  let isMod = true;
 
-  Object.keys(COMMANDS).forEach(key => {
+  if (msg.member && msg.guild) {
+    const userRoles = msg.member.roles;
+    const modRoles = await DB.getArrayAtPath(`modRoles/${msg.guild.id}`);
+    isMod = !!modRoles.length
+      ? !!userRoles.find((role) => modRoles.includes(role.id))
+      : true;
+  }
+
+  Object.keys(COMMANDS).forEach((key) => {
     const command = COMMANDS[key];
 
     if (command.hidden) {
@@ -23,7 +27,7 @@ const displayHelp: CommandFn = async (params, msg) => {
       return;
     }
 
-    const params = command.params.map(param => `<${param}>`).join(' ');
+    const params = command.params.map((param) => `<${param}>`).join(' ');
     embed.addField(
       `!cb ${key} ${params} ${command.requiresMod ? 'Ⓜ' : ''}`,
       COMMANDS[key].description,
@@ -45,5 +49,5 @@ export const help: Command = {
   params: [],
   description: 'Shows this help message.',
   fn: displayHelp,
-  aliases: ['?']
+  aliases: ['?'],
 };
