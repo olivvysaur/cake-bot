@@ -35,11 +35,14 @@ export const onMemberLeave = async (member: GuildMember) => {
     { name: 'Member for', value: timeSince(member.joinedAt).asString },
     {
       name: 'Roles',
-      value: member.roles
-        .array()
-        .filter((role) => role.name !== '@everyone')
-        .sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1))
-        .join(' '),
+      value:
+        member.roles
+          .array()
+          .filter((role) => role.name !== '@everyone')
+          .sort((a, b) =>
+            a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+          )
+          .join(' ') || 'None',
     },
   ];
   Log.red('Member left', `${member}`, serverId, {
