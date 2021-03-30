@@ -40,7 +40,7 @@ const fetchVideo = async (msg: Message) => {
     },
   });
 
-  console.log({ status: response.status });
+  console.log({ status: response.status, data: response.data });
 
   if (response.status !== 200) {
     return;
@@ -48,9 +48,13 @@ const fetchVideo = async (msg: Message) => {
 
   const root = parse(response.data);
 
+  console.log({ root });
+
   const scriptTag = root.querySelector('script#__NEXT_DATA__');
 
-  const props = JSON.parse(scriptTag.rawText).props?.pageProps;
+  console.log({ scriptTag });
+
+  const props = JSON.parse(scriptTag.innerText).props?.pageProps;
 
   const {
     seoProps: {
@@ -67,18 +71,6 @@ const fetchVideo = async (msg: Message) => {
       },
     },
   } = props;
-
-  console.log({
-    canonicalHref,
-    description,
-    createTime,
-    downloadAddr,
-    cover,
-    authorUsername,
-    authorName,
-    playCount,
-    likeCount,
-  });
 
   const embedDescription = `
 ${description}
