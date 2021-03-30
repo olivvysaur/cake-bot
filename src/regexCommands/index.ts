@@ -1,8 +1,11 @@
 import { Message } from 'discord.js';
-import { RegexCommand } from '../interfaces';
-import { brr } from './brr';
 
-export const REGEX_COMMANDS: RegexCommand[] = [brr];
+import { RegexCommand } from '../interfaces';
+
+import { brr } from './brr';
+import { tiktok } from './tiktok';
+
+export const REGEX_COMMANDS: RegexCommand[] = [brr, tiktok];
 
 export const runRegexCommands = (msg: Message) => {
   REGEX_COMMANDS.forEach((command) => {
