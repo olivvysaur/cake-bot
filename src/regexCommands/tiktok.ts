@@ -31,7 +31,6 @@ const fetchVideo = async (msg: Message) => {
   }
 
   const url = match[0];
-  console.log({ url });
 
   const response = await Axios.get(url, {
     headers: {
@@ -39,20 +38,16 @@ const fetchVideo = async (msg: Message) => {
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
     },
   });
-
-  console.log({ status: response.status, data: response.data });
-
   if (response.status !== 200) {
     return;
   }
 
   const root = parse(response.data);
 
-  console.log({ root });
-
   const scriptTag = root.querySelector('script#__NEXT_DATA__');
-
-  console.log({ scriptTag });
+  if (!scriptTag) {
+    return;
+  }
 
   const props = JSON.parse(scriptTag.innerText).props?.pageProps;
 
