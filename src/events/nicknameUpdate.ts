@@ -4,8 +4,8 @@ import { updateList } from '../updateList';
 
 export const onNicknameUpdated = (
   user: GuildMember,
-  oldNickname: string,
-  newNickname: string
+  oldNickname: string | null,
+  newNickname: string | null
 ) => {
   updateList(user.guild.id);
 
