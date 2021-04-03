@@ -1,9 +1,8 @@
 import Axios from 'axios';
 import { RichEmbed } from 'discord.js';
-import { emoji } from '../emoji';
 
+import { emoji } from '../emoji';
 import { Command, CommandFn } from '../interfaces';
-import { notUndefined } from '../notUndefined';
 
 const API_URL = 'https://api.song.link/v1-alpha.1/links?url=';
 
@@ -15,10 +14,13 @@ const PLATFORMS = {
 };
 
 export const lookupSong: CommandFn = async (params, msg) => {
-  const requestedUrl = API_URL + params[0];
+  const requestedUrl =
+    params[0].startsWith('<') && params[0].endsWith('>')
+      ? params[0].slice(1, -1)
+      : params[0];
 
   try {
-    const { status, data } = await Axios.get(requestedUrl);
+    const { status, data } = await Axios.get(API_URL + requestedUrl);
 
     if (status !== 200) {
       throw new Error(`Received status code ${status}`);
@@ -55,7 +57,8 @@ export const lookupSong: CommandFn = async (params, msg) => {
       .setDescription(description + ` • [More platforms](${pageUrl})`)
       .setThumbnail(thumbnailUrl);
 
-    msg.channel.send(embed);
+    msg.suppressEmbeds();
+    return msg.channel.send(embed);
   } catch (error) {
     console.error(
       `Failed to look up song "${requestedUrl}" due to error: ${error}`
