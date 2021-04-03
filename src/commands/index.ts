@@ -31,6 +31,7 @@ import { epicgames } from './epicgames';
 import { minesweeper } from './minesweeper';
 import { autopurge } from './autopurge';
 import { choose } from './choose';
+import { song } from './song';
 
 export const COMMANDS: { [code: string]: Command } = {
   help,
@@ -64,6 +65,7 @@ export const COMMANDS: { [code: string]: Command } = {
   epicgames,
   minesweeper,
   autopurge,
+  song,
 };
 
 export const findCommand = (name: string) => {

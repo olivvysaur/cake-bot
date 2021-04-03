@@ -107,12 +107,9 @@ client.on('message', async (msg) => {
   }
 
   onMessageReceived(msg);
-  runRegexCommands(msg);
 
-  if (
-    !msg.isMentioned(client.user) &&
-    !msg.content.toLowerCase().startsWith(PREFIX.toLowerCase())
-  ) {
+  if (!msg.content.toLowerCase().startsWith(PREFIX.toLowerCase())) {
+    runRegexCommands(msg);
     return;
   }
 

@@ -4,8 +4,9 @@ import { RegexCommand } from '../interfaces';
 
 import { brr } from './brr';
 import { tiktok } from './tiktok';
+import { spotify } from './spotify';
 
-export const REGEX_COMMANDS: RegexCommand[] = [brr, tiktok];
+export const REGEX_COMMANDS: RegexCommand[] = [brr, tiktok, spotify];
 
 export const runRegexCommands = (msg: Message) => {
   REGEX_COMMANDS.forEach((command) => {
