@@ -31,8 +31,12 @@ export const onMemberLeave = async (member: GuildMember) => {
     }
   }
 
+  const timeSinceJoining = member.joinedAt
+    ? timeSince(member.joinedAt).asString
+    : 'Unknown time';
+
   const fields = [
-    { name: 'Member for', value: timeSince(member.joinedAt).asString },
+    { name: 'Member for', value: timeSinceJoining },
     {
       name: 'Roles',
       value:
